@@ -7,7 +7,7 @@ TextStyle appStyle({
   required FontWeight fontWeight,
 }) {
   return TextStyle(
-    fontFamily: "UberMove",
+    fontFamily: "Roboto",
     fontSize: size,
     color: color,
     fontWeight: fontWeight,
