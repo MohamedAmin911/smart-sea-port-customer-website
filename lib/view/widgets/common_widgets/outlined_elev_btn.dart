@@ -11,12 +11,14 @@ class OutlinedElevBtn extends StatelessWidget {
     required this.textColor,
     required this.bgColor,
     required this.borderColor,
+    required this.func,
   });
   final double width;
   final String text;
   final Color textColor;
   final Color bgColor;
   final Color borderColor;
+  final void Function() func;
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
@@ -27,7 +29,7 @@ class OutlinedElevBtn extends StatelessWidget {
         ),
         backgroundColor: Kcolor.background,
       ),
-      onPressed: () {},
+      onPressed: func,
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: 12.h),
         child: Text(

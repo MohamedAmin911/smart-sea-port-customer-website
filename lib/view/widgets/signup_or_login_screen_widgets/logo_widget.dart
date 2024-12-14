@@ -11,7 +11,8 @@ Widget buildLogo() {
     child: SvgPicture.asset(
       KIconAssets.smartPortLogo,
       color: Kcolor.primary,
-      width: 300.w, // Set a maximum width for the logo
+      width: 400.w,
+      height: 400.h, // Set a maximum width for the logo
     ),
   );
 }
