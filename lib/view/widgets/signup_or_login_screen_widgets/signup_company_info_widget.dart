@@ -51,6 +51,7 @@ class CompanyInfoFields extends StatelessWidget {
                 children: [
                   // Email Field
                   StyledFormField(
+                    width: 600,
                     keyboardType: TextInputType.emailAddress,
                     obscureText: false,
                     hintText: 'Company email address',
@@ -71,6 +72,7 @@ class CompanyInfoFields extends StatelessWidget {
                   SizedBox(height: 15.h),
                   // Password Field
                   StyledFormField(
+                    width: 600,
                     keyboardType: TextInputType.visiblePassword,
                     hintText: 'Password',
                     prefixIcon: Icons.lock,
@@ -101,6 +103,7 @@ class CompanyInfoFields extends StatelessWidget {
                   SizedBox(height: 15.h),
                   // Company Name Field
                   StyledFormField(
+                    width: 600,
                     keyboardType: TextInputType.name,
                     obscureText: false,
                     hintText: 'Company name',
@@ -116,6 +119,7 @@ class CompanyInfoFields extends StatelessWidget {
                   SizedBox(height: 15.h),
                   // Company Phone Number Field
                   StyledFormField(
+                    width: 600,
                     keyboardType: TextInputType.phone,
                     obscureText: false,
                     hintText: 'Company phone number',
@@ -144,6 +148,7 @@ class CompanyInfoFields extends StatelessWidget {
                 children: [
                   // Company Address Field
                   StyledFormField(
+                    width: 600,
                     keyboardType: TextInputType.streetAddress,
                     obscureText: false,
                     hintText: 'Company address',
@@ -159,6 +164,7 @@ class CompanyInfoFields extends StatelessWidget {
                   SizedBox(height: 15.h),
                   // City Field
                   StyledFormField(
+                    width: 600,
                     keyboardType: TextInputType.text,
                     obscureText: false,
                     hintText: 'City',
@@ -174,6 +180,7 @@ class CompanyInfoFields extends StatelessWidget {
                   SizedBox(height: 15.h),
                   // Registration Number Field
                   StyledFormField(
+                    width: 600,
                     keyboardType: TextInputType.number,
                     obscureText: false,
                     hintText: 'Registration Number/Tax ID',
@@ -189,6 +196,7 @@ class CompanyInfoFields extends StatelessWidget {
                   SizedBox(height: 15.h),
                   // Import License Number Field
                   StyledFormField(
+                    width: 600,
                     keyboardType: TextInputType.number,
                     obscureText: false,
                     hintText: 'Import License Number',

@@ -1,4 +1,5 @@
 import 'package:final_project_customer_website/constants/colors.dart';
+import 'package:final_project_customer_website/view/screens/authentication_screens/login_screen.dart';
 import 'package:final_project_customer_website/view/screens/authentication_screens/signup_screen.dart';
 import 'package:final_project_customer_website/view/widgets/common_widgets/elev_btn.dart';
 import 'package:final_project_customer_website/view/widgets/common_widgets/outlined_elev_btn.dart';
@@ -23,7 +24,9 @@ Widget buildButtons() {
       SizedBox(
         width: 300.w,
         child: OutlinedElevBtn(
-          func: () {},
+          func: () {
+            Get.to(const LogInScreen());
+          },
           bgColor: Kcolor.background,
           borderColor: Kcolor.primary,
           text: "LOGIN",

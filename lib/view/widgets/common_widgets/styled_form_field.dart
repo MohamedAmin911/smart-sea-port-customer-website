@@ -11,18 +11,19 @@ class StyledFormField extends StatelessWidget {
       required this.keyboardType,
       this.validator,
       required this.obscureText,
-      this.controller});
+      this.controller,
+      required this.width});
   final String hintText;
   final IconData prefixIcon;
   final TextInputType keyboardType;
   final String? Function(String?)? validator;
   final bool obscureText;
   final TextEditingController? controller;
-
+  final int width;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 700.w,
+      width: width.w,
       height: 80.h,
       child: TextFormField(
         minLines: 1,
