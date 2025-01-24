@@ -1,6 +1,7 @@
 import 'package:final_project_customer_website/constants/colors.dart';
 import 'package:final_project_customer_website/constants/icon_assets.dart';
 import 'package:final_project_customer_website/constants/text.dart';
+import 'package:final_project_customer_website/controller/authentication_controller.dart';
 import 'package:final_project_customer_website/view/screens/authentication_screens/signup_screen.dart';
 import 'package:final_project_customer_website/view/widgets/common_widgets/elev_btn.dart';
 import 'package:final_project_customer_website/view/widgets/common_widgets/styled_form_field.dart';
@@ -20,6 +21,7 @@ class _LogInScreenState extends State<LogInScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  AuthController authController = Get.put(AuthController());
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -67,17 +69,6 @@ class _LogInScreenState extends State<LogInScreen> {
                         hintText: 'Company email address',
                         prefixIcon: Icons.email_rounded,
                         controller: _emailController,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter an email address';
-                          }
-                          final emailRegex = RegExp(
-                              r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
-                          if (!emailRegex.hasMatch(value)) {
-                            return 'Please enter a valid email address';
-                          }
-                          return null;
-                        },
                       ),
                       SizedBox(height: 10.h),
                       // Password Field
@@ -118,15 +109,22 @@ class _LogInScreenState extends State<LogInScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Checkbox(
-                            value: false,
-                            onChanged: (isTrue) {},
-                            checkColor: Kcolor.background,
-                            focusColor: Kcolor.primary,
-                            activeColor: Kcolor.primary,
-                            side: const BorderSide(color: Kcolor.primary),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(4.r),
+                          Obx(
+                            () => Checkbox(
+                              value: authController
+                                  .isRememberMe.value, // Bind to state
+                              onChanged: (isChecked) async {
+                                authController.isRememberMe.value = isChecked!;
+                                await authController.saveRememberMe(isChecked);
+                                await authController.loadRememberMe();
+                              },
+                              checkColor: Kcolor.background,
+                              focusColor: Kcolor.primary,
+                              activeColor: Kcolor.primary,
+                              side: const BorderSide(color: Kcolor.primary),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4.r),
+                              ),
                             ),
                           ),
                           SizedBox(width: 10.w),
@@ -143,14 +141,30 @@ class _LogInScreenState extends State<LogInScreen> {
                       SizedBox(height: 15.h),
 
                       // LogIn Button
-                      ElevBtn1(
-                        width: isWideScreen ? 400.w : double.infinity,
-                        text: "LOGIN",
-                        textColor: Kcolor.background,
-                        bgColor: Kcolor.primary,
-                        func: () {
-                          if (_formKey.currentState!.validate()) {}
-                        },
+                      Obx(
+                        () => ElevBtn1(
+                          width: isWideScreen ? 400.w : double.infinity,
+                          icon: authController.isLoading
+                              ? SizedBox(
+                                  width: 20.w,
+                                  height: 20.h,
+                                  child: const CircularProgressIndicator(
+                                      color: Kcolor.background))
+                              : Text(
+                                  "LOGIN",
+                                  style: appStyle(
+                                    size: 15.sp,
+                                    color: Kcolor.background,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                          textColor: Kcolor.background,
+                          bgColor: Kcolor.primary,
+                          func: () {
+                            authController.signInUser(_emailController.text,
+                                _passwordController.text, context);
+                          },
+                        ),
                       ),
                       SizedBox(height: 25.h),
 

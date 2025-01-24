@@ -44,7 +44,10 @@ dependencies:
   flutter_polyline_points:
   image_network:
   flutter_svg:
-
+  firebase_core:
+  firebase_auth:
+  cloud_firestore:
+  shared_preferences: ^2.4.0
 
 dev_dependencies:
   flutter_test:

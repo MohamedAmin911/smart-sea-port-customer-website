@@ -1,4 +1,5 @@
 import 'package:final_project_customer_website/constants/colors.dart';
+import 'package:final_project_customer_website/constants/text.dart';
 import 'package:final_project_customer_website/view/screens/authentication_screens/login_screen.dart';
 import 'package:final_project_customer_website/view/screens/authentication_screens/signup_screen.dart';
 import 'package:final_project_customer_website/view/widgets/common_widgets/elev_btn.dart';
@@ -16,7 +17,14 @@ Widget buildButtons() {
           Get.to(const SignUpScreen());
         },
         bgColor: Kcolor.primary,
-        text: "REGISTER",
+        icon: Text(
+          "REGISTER",
+          style: appStyle(
+            size: 15.sp,
+            color: Kcolor.background,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         textColor: Kcolor.background,
         width: 300.w,
       ),

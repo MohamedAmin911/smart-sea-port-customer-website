@@ -1,8 +1,11 @@
 import 'package:final_project_customer_website/constants/colors.dart';
+import 'package:final_project_customer_website/constants/text.dart';
+import 'package:final_project_customer_website/controller/authentication_controller.dart';
 import 'package:final_project_customer_website/view/widgets/common_widgets/elev_btn.dart';
 import 'package:final_project_customer_website/view/widgets/common_widgets/styled_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 
 class CompanyInfoFields extends StatelessWidget {
   const CompanyInfoFields({
@@ -40,6 +43,7 @@ class CompanyInfoFields extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AuthController authController = Get.put(AuthController());
     return Column(
       children: [
         SizedBox(height: 50.h),
@@ -218,16 +222,32 @@ class CompanyInfoFields extends StatelessWidget {
         SizedBox(height: 100.h),
 
         // Register Button
-        ElevBtn1(
-          width: isWideScreen ? 400.w : double.infinity,
-          text: "REGISTER",
-          textColor: Kcolor.background,
-          bgColor: Kcolor.primary,
-          func: () {
-            if (_formKey.currentState!.validate()) {
-              print('Company Name: ${_companyNameController.text}');
-            }
-          },
+        Obx(
+          () => ElevBtn1(
+            width: isWideScreen ? 400.w : double.infinity,
+            icon: authController.isLoading
+                ? SizedBox(
+                    width: 20.w,
+                    height: 20.h,
+                    child: const CircularProgressIndicator(
+                        color: Kcolor.background))
+                : Text(
+                    "REGISTER",
+                    style: appStyle(
+                      size: 15.sp,
+                      color: Kcolor.background,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+            textColor: Kcolor.background,
+            bgColor: Kcolor.primary,
+            func: () {
+              if (_formKey.currentState!.validate()) {
+                authController.registerUser(
+                    _emailController.text, _passwordController.text, context);
+              }
+            },
+          ),
         ),
       ],
     );
