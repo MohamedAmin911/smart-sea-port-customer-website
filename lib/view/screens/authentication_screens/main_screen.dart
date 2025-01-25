@@ -1,6 +1,6 @@
 import 'package:final_project_customer_website/controller/authentication_controller.dart';
 import 'package:final_project_customer_website/view/screens/authentication_screens/signup_or_login_screen.dart';
-import 'package:final_project_customer_website/view/screens/home_screen/home_screen.dart';
+import 'package:final_project_customer_website/view/screens/tabs_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
