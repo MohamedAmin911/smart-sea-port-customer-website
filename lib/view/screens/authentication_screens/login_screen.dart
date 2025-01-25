@@ -2,6 +2,7 @@ import 'package:final_project_customer_website/constants/colors.dart';
 import 'package:final_project_customer_website/constants/icon_assets.dart';
 import 'package:final_project_customer_website/constants/text.dart';
 import 'package:final_project_customer_website/controller/authentication_controller.dart';
+import 'package:final_project_customer_website/controller/customer_controller.dart';
 import 'package:final_project_customer_website/view/screens/authentication_screens/signup_screen.dart';
 import 'package:final_project_customer_website/view/widgets/common_widgets/elev_btn.dart';
 import 'package:final_project_customer_website/view/widgets/common_widgets/styled_form_field.dart';
@@ -22,6 +23,7 @@ class _LogInScreenState extends State<LogInScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   AuthController authController = Get.put(AuthController());
+  CustomerController customerController = Get.put(CustomerController());
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;

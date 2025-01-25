@@ -1,6 +1,5 @@
 import 'package:final_project_customer_website/constants/colors.dart';
 import 'package:final_project_customer_website/constants/icon_assets.dart';
-import 'package:final_project_customer_website/controller/authentication_controller.dart';
 import 'package:final_project_customer_website/view/screens/history_screen.dart';
 import 'package:final_project_customer_website/view/screens/profile_screen.dart';
 import 'package:final_project_customer_website/view/screens/tracking_screen.dart';
@@ -8,7 +7,6 @@ import 'package:final_project_customer_website/view/widgets/home_screen_widgets/
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get/get.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -39,7 +37,6 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   PageController controller = PageController();
-  AuthController authController = Get.put(AuthController());
 
   @override
   Widget build(BuildContext context) {

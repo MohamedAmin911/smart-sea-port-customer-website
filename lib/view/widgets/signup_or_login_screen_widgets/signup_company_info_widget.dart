@@ -245,6 +245,18 @@ class CompanyInfoFields extends StatelessWidget {
               if (_formKey.currentState!.validate()) {
                 authController.registerUser(
                     _emailController.text, _passwordController.text, context);
+
+                authController.companyAddress.value = _companyAddress.text;
+                authController.companyCity.value = _companyCity.text;
+                authController.companyName.value = _companyNameController.text;
+                authController.companyPhoneNumber.value =
+                    _companyPhoneNumber.text;
+                authController.companyRegistrationNumber.value =
+                    _companyRegistrationNumber.text;
+                authController.companyImportLicenseNumber.value =
+                    _companyImportLicenseNumber.text;
+                authController.isBlocked.value = false.toString();
+                authController.companyEmail.value = _emailController.text;
               }
             },
           ),

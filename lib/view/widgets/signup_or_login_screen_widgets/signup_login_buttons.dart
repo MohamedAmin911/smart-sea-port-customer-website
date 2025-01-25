@@ -33,7 +33,7 @@ Widget buildButtons() {
         width: 300.w,
         child: OutlinedElevBtn(
           func: () {
-            Get.to(const LogInScreen());
+            Get.to(LogInScreen());
           },
           bgColor: Kcolor.background,
           borderColor: Kcolor.primary,

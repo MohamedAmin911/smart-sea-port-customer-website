@@ -1,3 +1,5 @@
+import 'package:final_project_customer_website/controller/customer_controller.dart';
+import 'package:final_project_customer_website/model/customer_model.dart';
 import 'package:final_project_customer_website/view/screens/authentication_screens/login_screen.dart';
 import 'package:final_project_customer_website/view/screens/authentication_screens/signup_or_login_screen.dart';
 import 'package:final_project_customer_website/view/screens/tabs_screen.dart';
@@ -8,10 +10,21 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthController extends GetxController {
+  CustomerController customerController = Get.put(CustomerController());
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final RxBool _isLoading = false.obs;
   bool get isLoading => _isLoading.value;
-  var isRememberMe = true.obs;
+  var isRememberMe = false.obs;
+
+  RxString companyName = ''.obs;
+  RxString companyAddress = ''.obs;
+  RxString isBlocked = ''.obs;
+  RxString companyEmail = ''.obs;
+  RxString companyPhoneNumber = ''.obs;
+  RxString companyCity = ''.obs;
+  RxString companyRegistrationNumber = ''.obs;
+  RxString companyImportLicenseNumber = ''.obs;
 
   @override
   void onInit() {
@@ -47,7 +60,17 @@ class AuthController extends GetxController {
         email: email.trim(),
         password: password,
       );
-
+      await customerController.addCustomer(CustomerModel(
+        uid: _auth.currentUser!.uid,
+        companyName: companyName.value,
+        companyAddress: companyAddress.value,
+        isBlocked: isBlocked.value,
+        companyEmail: companyEmail.value,
+        companyPhoneNumber: companyPhoneNumber.value,
+        companyCity: companyCity.value,
+        companyRegistrationNumber: companyRegistrationNumber.value,
+        companyImportLicenseNumber: companyImportLicenseNumber.value,
+      ));
       // Registration successful
       print("User created: ${userCredential.user?.uid}");
       getxSnackbar(title: "Success", msg: "Registration successful!");
