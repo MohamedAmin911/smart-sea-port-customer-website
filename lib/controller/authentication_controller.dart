@@ -1,4 +1,5 @@
 import 'package:final_project_customer_website/view/screens/authentication_screens/login_screen.dart';
+import 'package:final_project_customer_website/view/screens/authentication_screens/signup_or_login_screen.dart';
 import 'package:final_project_customer_website/view/screens/home_screen/home_screen.dart';
 import 'package:final_project_customer_website/view/widgets/common_widgets/getx_snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -27,7 +28,20 @@ class AuthController extends GetxController {
     }
 
     _isLoading.value = true;
+
     try {
+      // Check if the email is already registered
+      List<String> signInMethods =
+          await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
+
+      if (signInMethods.isNotEmpty) {
+        // Email already registered
+        getxSnackbar(
+            title: "Error", msg: "The email address is already in use.");
+        return;
+      }
+
+      // If the email is not registered, proceed with registration
       UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
         email: email.trim(),
@@ -36,43 +50,27 @@ class AuthController extends GetxController {
 
       // Registration successful
       print("User created: ${userCredential.user?.uid}");
-      Get.snackbar("Success", "Registration successful!",
-          snackPosition: SnackPosition.BOTTOM);
+      getxSnackbar(title: "Success", msg: "Registration successful!");
 
-      //send email verification
+      // Send email verification
       await sendEmailVerification(context);
-      // Navigate to the next screen or perform other actions
-      Get.off(const LogInScreen()); // Use GetX navigation
+      Get.off(const LogInScreen());
     } on FirebaseAuthException catch (e) {
-      String errorMessage;
-      switch (e.code) {
-        case 'weak-password':
-          errorMessage = 'The password provided is too weak.';
-          break;
-        case 'email-already-in-use':
-          errorMessage = 'The account already exists for that email.';
-          break;
-        case 'invalid-email':
-          errorMessage = 'The email address is badly formatted.';
-          break;
-        case 'operation-not-allowed':
-          errorMessage = 'Email/password accounts are not enabled.';
-          break;
-        default:
-          errorMessage = 'An error occurred during registration.';
-          print(e.toString()); // Print the full error for debugging
-      }
-      Get.snackbar("Error", errorMessage, snackPosition: SnackPosition.BOTTOM);
+      // Handle Firebase authentication errors
+      print("Error during registration: ${e.code}");
+      getxSnackbar(
+        title: "Error",
+        msg: e.message ?? "An unexpected error occurred. Please try again.",
+      );
     } catch (e) {
-      print(e);
-      Get.snackbar("Error", "An unexpected error occurred.",
-          snackPosition: SnackPosition.BOTTOM);
+      // Handle any unexpected errors
+      print("Unexpected error: $e");
+      getxSnackbar(title: "Error", msg: "An unexpected error occurred.");
     } finally {
       _isLoading.value = false;
     }
   }
 
-//send email verification
   Future<void> sendEmailVerification(BuildContext context) async {
     _isLoading.value = true;
     try {
@@ -156,5 +154,22 @@ class AuthController extends GetxController {
   Future<void> loadRememberMe() async {
     final prefs = await SharedPreferences.getInstance();
     isRememberMe.value = prefs.getBool('rememberMe') ?? false;
+  }
+
+  Future<void> signOut(BuildContext context) async {
+    _isLoading.value = true;
+    try {
+      await _auth.signOut();
+
+      final prefs = await SharedPreferences.getInstance();
+      prefs.clear();
+      Get.off(const SignUpOrLogInScreen());
+      getxSnackbar(title: "Success", msg: "Signed out successfully!");
+    } catch (e) {
+      print("Sign-out error: $e");
+      getxSnackbar(title: "Error", msg: "Failed to sign out.");
+    } finally {
+      _isLoading.value = false;
+    }
   }
 }

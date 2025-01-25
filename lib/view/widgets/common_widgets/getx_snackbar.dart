@@ -6,14 +6,14 @@ import 'package:get/get.dart';
 
 SnackbarController getxSnackbar({required String title, required String msg}) {
   return Get.snackbar("", "",
-      backgroundColor: Kcolor.accent,
+      backgroundColor: Kcolor.primary,
       titleText: Text(
         title,
         style: appStyle(
           size: 16.sp,
           color: Kcolor.background,
-          fontWeight: FontWeight.w900,
-        ).copyWith(letterSpacing: 2),
+          fontWeight: FontWeight.bold,
+        ),
       ),
       messageText: Text(
         msg,
