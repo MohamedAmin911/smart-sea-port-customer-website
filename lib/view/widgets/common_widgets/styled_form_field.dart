@@ -7,14 +7,16 @@ class StyledFormField extends StatelessWidget {
   const StyledFormField(
       {super.key,
       required this.hintText,
-      required this.prefixIcon,
+      this.prefixIcon,
       required this.keyboardType,
       this.validator,
       required this.obscureText,
       this.controller,
-      required this.width});
+      required this.width,
+      this.suffixIcon});
   final String hintText;
-  final IconData prefixIcon;
+  final IconData? prefixIcon;
+  final Widget? suffixIcon;
   final TextInputType keyboardType;
   final String? Function(String?)? validator;
   final bool obscureText;
@@ -26,6 +28,7 @@ class StyledFormField extends StatelessWidget {
       width: width.w,
       height: 80.h,
       child: TextFormField(
+        textAlignVertical: TextAlignVertical.center,
         minLines: 1,
         controller: controller,
         obscureText: obscureText,
@@ -37,6 +40,7 @@ class StyledFormField extends StatelessWidget {
               size: 13.sp,
               color: Kcolor.primary.withOpacity(0.2),
               fontWeight: FontWeight.w400),
+          suffix: suffixIcon,
           prefixIcon: Icon(prefixIcon, color: Kcolor.primary),
           alignLabelWithHint: true,
           constraints: BoxConstraints(minHeight: 50.h, maxWidth: 400.w),

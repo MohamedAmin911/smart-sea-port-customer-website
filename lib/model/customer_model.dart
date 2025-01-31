@@ -1,3 +1,5 @@
+import 'package:final_project_customer_website/model/shipment_model.dart';
+
 class CustomerModel {
   final String uid;
   final String companyName;
@@ -8,6 +10,7 @@ class CustomerModel {
   final String companyCity;
   final String companyRegistrationNumber;
   final String companyImportLicenseNumber;
+  final List<ShipmentModel> orders;
   CustomerModel({
     this.uid = "",
     required this.companyName,
@@ -18,6 +21,7 @@ class CustomerModel {
     required this.companyCity,
     required this.companyRegistrationNumber,
     required this.companyImportLicenseNumber,
+    this.orders = const [],
   });
   // Convert a Map object into a User object
   factory CustomerModel.fromFirebase(Map<String, dynamic> json) {
@@ -31,6 +35,12 @@ class CustomerModel {
       companyCity: json['companyCity'] as String,
       companyRegistrationNumber: json['companyRegistrationNumber'] as String,
       companyImportLicenseNumber: json['companyImportLicenseNumber'] as String,
+      orders: (json['pickupHistory'] as Map<Object?, Object?>?)
+              ?.values
+              .map((e) => ShipmentModel.fromFirebase(
+                  Map<String, dynamic>.from(e as Map)))
+              .toList() ??
+          [],
     );
   }
 
@@ -45,6 +55,7 @@ class CustomerModel {
       'companyCity': companyCity,
       'companyRegistrationNumber': companyRegistrationNumber,
       'companyImportLicenseNumber': companyImportLicenseNumber,
+      "orders": orders.map((e) => e.toJson()).toList(),
     };
   }
 }
