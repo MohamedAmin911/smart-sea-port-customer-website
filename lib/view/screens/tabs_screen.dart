@@ -1,5 +1,8 @@
 import 'package:final_project_customer_website/constants/colors.dart';
 import 'package:final_project_customer_website/constants/icon_assets.dart';
+import 'package:final_project_customer_website/constants/text.dart';
+import 'package:final_project_customer_website/controller/customer_controller.dart';
+import 'package:final_project_customer_website/controller/order_controller.dart';
 import 'package:final_project_customer_website/view/screens/history_screen.dart';
 import 'package:final_project_customer_website/view/screens/profile_screen.dart';
 import 'package:final_project_customer_website/view/screens/tracking_screen.dart';
@@ -7,6 +10,7 @@ import 'package:final_project_customer_website/view/widgets/home_screen_widgets/
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -37,7 +41,8 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   PageController controller = PageController();
-
+  final CustomerController customerController = Get.put(CustomerController());
+  final OrderController ordersController = Get.put(OrderController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,6 +60,48 @@ class _HomeScreenState extends State<HomeScreen>
               controller: controller),
         ),
         leadingWidth: 70.w,
+        actions: [
+          Obx(
+            () => Column(
+              children: [
+                SizedBox(height: 8.h),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        SizedBox(height: 7.h),
+                        Text(
+                            customerController
+                                .currentCustomer.value.companyName,
+                            style: appStyle(
+                                size: 20.sp,
+                                color: Kcolor.primary,
+                                fontWeight: FontWeight.bold)),
+                        SizedBox(height: 5.h),
+                        Text(
+                            customerController
+                                .currentCustomer.value.companyEmail,
+                            style: appStyle(
+                                size: 12.sp,
+                                color: Kcolor.primary,
+                                fontWeight: FontWeight.w400)),
+                      ],
+                    ),
+                    SizedBox(width: 5.w),
+                    Icon(
+                      Icons.corporate_fare_rounded,
+                      color: Kcolor.primary,
+                      size: 55.sp,
+                    ),
+                    SizedBox(width: 8.w),
+                  ],
+                ),
+              ],
+            ),
+          )
+        ],
         leading: Padding(
           padding: EdgeInsets.only(left: 15.w, top: 15.h),
           child: SvgPicture.asset(

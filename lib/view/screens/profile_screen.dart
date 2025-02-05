@@ -1,8 +1,11 @@
 import 'package:final_project_customer_website/constants/colors.dart';
 import 'package:final_project_customer_website/constants/text.dart';
+import 'package:final_project_customer_website/controller/authentication_controller.dart';
 import 'package:final_project_customer_website/controller/customer_controller.dart';
 import 'package:final_project_customer_website/view/widgets/common_widgets/elev_btn.dart';
+import 'package:final_project_customer_website/view/widgets/common_widgets/getx_snackbar.dart';
 import 'package:final_project_customer_website/view/widgets/profile_screen_widgets/text_field_widget.dart';
+import 'package:final_project_customer_website/view/widgets/signup_or_login_screen_widgets/signout_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -23,6 +26,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final companyRegistrationNumberController = TextEditingController();
   final companyImportLicenseNumberController = TextEditingController();
   final CustomerController customerController = Get.put(CustomerController());
+  AuthController authController = Get.put(AuthController());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,6 +64,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         companyEmailController.text.trim(),
                                   },
                                   1);
+                              getxSnackbar(
+                                  title: "Success",
+                                  msg: "Profile updated successfully!");
                             } else {
                               // Enable editing mode
                               customerController.isEditing1.value = true;
@@ -89,6 +97,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         companyNameController.text.trim(),
                                   },
                                   2);
+                              getxSnackbar(
+                                  title: "Success",
+                                  msg: "Profile updated successfully!");
                             } else {
                               // Enable editing mode
                               customerController.isEditing2.value = true;
@@ -119,6 +130,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             .trim(),
                                   },
                                   3);
+                              getxSnackbar(
+                                  title: "Success",
+                                  msg: "Profile updated successfully!");
                             } else {
                               // Enable editing mode
                               customerController.isEditing3.value = true;
@@ -147,6 +161,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         companyAddressController.text.trim(),
                                   },
                                   4);
+                              getxSnackbar(
+                                  title: "Success",
+                                  msg: "Profile updated successfully!");
                             } else {
                               // Enable editing mode
                               customerController.isEditing4.value = true;
@@ -181,6 +198,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         companyCityController.text.trim(),
                                   },
                                   5);
+                              getxSnackbar(
+                                  title: "Success",
+                                  msg: "Profile updated successfully!");
                             } else {
                               // Enable editing mode
                               customerController.isEditing5.value = true;
@@ -211,6 +231,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             .trim(),
                                   },
                                   6);
+                              getxSnackbar(
+                                  title: "Success",
+                                  msg: "Profile updated successfully!");
                             } else {
                               // Enable editing mode
                               customerController.isEditing6.value = true;
@@ -242,6 +265,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             .trim(),
                                   },
                                   7);
+                              getxSnackbar(
+                                  title: "Success",
+                                  msg: "Profile updated successfully!");
                             } else {
                               // Enable editing mode
                               customerController.isEditing7.value = true;
@@ -268,6 +294,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ],
             ),
+            //sign out button
+            SizedBox(height: 80.h),
+            Center(
+              child: SignOutButton(authController: authController),
+            )
           ],
         )),
       ),

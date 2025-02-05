@@ -158,7 +158,6 @@ class CustomerController extends GetxController {
     }
     try {
       await customerRef.child(customerId).update(updatedData);
-      getxSnackbar(title: "Success", msg: "Profile updated successfully!");
     } catch (e) {
       getxSnackbar(title: "Error", msg: "Failed to update profile: $e");
     } finally {

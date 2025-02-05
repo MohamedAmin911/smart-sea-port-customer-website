@@ -102,9 +102,9 @@ class OrderCardWidget extends StatelessWidget {
                         status,
                         overflow: TextOverflow.ellipsis,
                         style: appStyle(
-                            size: 18.sp,
+                            size: 11.sp,
                             color: Kcolor.background,
-                            fontWeight: FontWeight.w500),
+                            fontWeight: FontWeight.w700),
                       ),
                     ),
                   ),

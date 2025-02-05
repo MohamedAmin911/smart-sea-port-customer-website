@@ -3,13 +3,18 @@ enum ShipmentStatus {
   pending,
   inTransit,
   delivered,
+  waitingApproval,
+  cancelled,
+  waitingPickup,
+  returned,
 }
 
 class ShipmentModel {
-  final String shipmentId;
-  // final String senderId;
-  // final String senderName;
+  String shipmentId = "";
+  final String senderId;
+  final String senderName;
   final String senderAddress;
+  final String submitedDate;
   // final String receiverId;
   // final String receiverName;
   final String receiverAddress;
@@ -24,9 +29,10 @@ class ShipmentModel {
   final bool isDelayed;
 
   ShipmentModel({
+    required this.submitedDate,
     this.shipmentId = "",
-    // required this.senderId,
-    // required this.senderName,
+    required this.senderId,
+    required this.senderName,
     required this.senderAddress,
     // required this.receiverId,
     // required this.receiverName,
@@ -45,9 +51,10 @@ class ShipmentModel {
   // Convert a Map object into a ShipmentModel object
   factory ShipmentModel.fromFirebase(Map<String, dynamic> json) {
     return ShipmentModel(
+      submitedDate: json['submitedDate'] as String,
       shipmentId: json['shipmentId'] as String,
-      // senderId: json['senderId'] as String,
-      // senderName: json['senderName'] as String,
+      senderId: json['senderId'] as String,
+      senderName: json['senderName'] as String,
       senderAddress: json['senderAddress'] as String,
       // receiverId: json['receiverId'] as String,
       // receiverName: json['receiverName'] as String,
@@ -70,9 +77,10 @@ class ShipmentModel {
   // Convert a ShipmentModel object into a Map
   Map<String, dynamic> toJson() {
     return {
+      'submitedDate': submitedDate,
       'shipmentId': shipmentId,
-      // 'senderId': senderId,
-      // 'senderName': senderName,
+      'senderId': senderId,
+      'senderName': senderName,
       'senderAddress': senderAddress,
       // 'receiverId': receiverId,
       // 'receiverName': receiverName,
