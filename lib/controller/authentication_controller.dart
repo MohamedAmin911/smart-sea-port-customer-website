@@ -64,12 +64,12 @@ class AuthController extends GetxController {
         uid: _auth.currentUser!.uid,
         companyName: companyName.value,
         companyAddress: companyAddress.value,
-        isBlocked: isBlocked.value,
         companyEmail: companyEmail.value,
         companyPhoneNumber: companyPhoneNumber.value,
         companyCity: companyCity.value,
         companyRegistrationNumber: companyRegistrationNumber.value,
         companyImportLicenseNumber: companyImportLicenseNumber.value,
+        accountStatus: AccountStatus.waitingApproval,
       ));
       // Registration successful
       print("User created: ${userCredential.user?.uid}");

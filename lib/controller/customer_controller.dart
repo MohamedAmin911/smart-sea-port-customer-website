@@ -37,7 +37,6 @@ class CustomerController extends GetxController {
     uid: '',
     companyName: '',
     companyAddress: '',
-    isBlocked: '',
     companyEmail: '',
     companyPhoneNumber: '',
     companyCity: '',
