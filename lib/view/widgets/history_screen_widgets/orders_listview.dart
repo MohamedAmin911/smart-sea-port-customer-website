@@ -56,7 +56,14 @@ class OrdersListView extends StatelessWidget {
                                               .shipmentStatus.name ==
                                           ShipmentStatus.waitingPickup.name
                                       ? "Waiting Pickup"
-                                      : "In Transit",
+                                      : ordersController
+                                                  .shipmentsList
+                                                  .value[index]
+                                                  .shipmentStatus
+                                                  .name ==
+                                              ShipmentStatus.waitngPayment.name
+                                          ? "Waiting Payment"
+                                          : "In Transit",
               to: ordersController.shipmentsList[index].receiverAddress,
             ),
           );

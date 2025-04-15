@@ -13,14 +13,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class TabsScreen extends StatefulWidget {
+  const TabsScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<TabsScreen> createState() => _TabsScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
+class _TabsScreenState extends State<TabsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final _tabs = [

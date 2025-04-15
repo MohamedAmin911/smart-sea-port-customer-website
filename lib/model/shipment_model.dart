@@ -3,6 +3,7 @@ enum ShipmentStatus {
   waitingApproval,
   onHold,
   cancelled,
+  waitngPayment,
   inTransit,
   unLoading,
   waitingPickup,

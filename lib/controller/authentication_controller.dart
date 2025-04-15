@@ -149,7 +149,7 @@ class AuthController extends GetxController {
       bool isVerified = await isEmailVerified();
 
       isVerified
-          ? Get.off(const HomeScreen())
+          ? Get.off(const TabsScreen())
           : getxSnackbar(title: "Error", msg: "Email is not verified!");
 
       print("User signed in: ${userCredential.user?.uid}");

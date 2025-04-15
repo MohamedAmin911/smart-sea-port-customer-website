@@ -19,7 +19,7 @@ class _MainScreenState extends State<MainScreen> {
     return Obx(
       () => Scaffold(
         body: authController.isRememberMe.value
-            ? const HomeScreen()
+            ? const TabsScreen()
             : const SignUpOrLogInScreen(),
       ),
     );

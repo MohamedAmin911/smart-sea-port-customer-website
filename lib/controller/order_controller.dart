@@ -153,10 +153,7 @@ class OrderController extends GetxController {
 
         shipmentsList.value =
             userShipments; // Update the observable list with user-specific shipments
-
-        print(userShipments.length);
       } else {
-        print('No shipments found for this user.');
         shipmentsList.clear(); // Clear the list if no shipments are found
       }
     });
