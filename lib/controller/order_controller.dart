@@ -45,14 +45,16 @@ class OrderController extends GetxController {
         );
         isLoading.value = false;
         Get.back();
-        getxSnackbar(title: "Success", msg: "Order submitted successfully");
+        getxSnackbar(
+            title: "Success",
+            msg: "Order submitted successfully, please wait for approval.");
       } else {
         isLoading.value = false;
         getxSnackbar(title: "Error", msg: 'Failed to generate shipment ID');
       }
     } catch (e) {
       isLoading.value = false;
-      getxSnackbar(title: "Error", msg: 'Error adding shipment: $e');
+      getxSnackbar(title: "Error", msg: 'Error submitting shipment: $e');
     }
   }
 
@@ -151,6 +153,8 @@ class OrderController extends GetxController {
 
         shipmentsList.value =
             userShipments; // Update the observable list with user-specific shipments
+
+        print(userShipments.length);
       } else {
         print('No shipments found for this user.');
         shipmentsList.clear(); // Clear the list if no shipments are found

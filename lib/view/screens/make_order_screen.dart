@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:final_project_customer_website/constants/colors.dart';
 import 'package:final_project_customer_website/constants/icon_assets.dart';
 import 'package:final_project_customer_website/constants/text.dart';
@@ -10,7 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 class MakeOrderScreen extends StatefulWidget {
   const MakeOrderScreen({super.key});
@@ -20,12 +21,32 @@ class MakeOrderScreen extends StatefulWidget {
 }
 
 class _MakeOrderScreenState extends State<MakeOrderScreen> {
-  final TextEditingController senderAddressController = TextEditingController();
   final TextEditingController receiverAddressController =
       TextEditingController();
-  final TextEditingController shippingCostController = TextEditingController();
+  final TextEditingController shipmentTypeController = TextEditingController();
+  final TextEditingController shipmentWeightController =
+      TextEditingController();
+  final TextEditingController shipmentLengthController =
+      TextEditingController();
+  final TextEditingController shipmentWidthController = TextEditingController();
+
+  final TextEditingController shipmentHeightController =
+      TextEditingController();
+
   final orderController = Get.put(OrderController());
   final customerController = Get.put(CustomerController());
+
+  @override
+  void dispose() {
+    super.dispose();
+    receiverAddressController.dispose();
+    shipmentWeightController.dispose();
+    shipmentLengthController.dispose();
+    shipmentWidthController.dispose();
+    shipmentHeightController.dispose();
+    shipmentTypeController.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,7 +56,7 @@ class _MakeOrderScreenState extends State<MakeOrderScreen> {
         automaticallyImplyLeading: false,
         centerTitle: true,
         title: Text(
-          "MAKE ORDER",
+          "SUBMIT ORDER",
           style: appStyle(
               size: 30.sp, color: Kcolor.primary, fontWeight: FontWeight.bold),
         ),
@@ -93,50 +114,129 @@ class _MakeOrderScreenState extends State<MakeOrderScreen> {
         ),
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
+        padding: EdgeInsets.symmetric(horizontal: 500.w, vertical: 10.h),
         child: SingleChildScrollView(
           child: Column(
             children: [
               SizedBox(height: 50.h),
-              // Sender Address
-              StyledFormField(
-                width: 600,
-                keyboardType: TextInputType.streetAddress,
-                obscureText: false,
-                hintText: 'Sender Address',
-                prefixIcon: Icons.location_on,
-                controller: senderAddressController,
-                validator: (value) => value == null || value.isEmpty
-                    ? 'Please enter sender address'
-                    : null,
-              ),
-              SizedBox(height: 15.h),
-
               // Receiver Address
               StyledFormField(
-                width: 600,
+                width: double.infinity,
                 keyboardType: TextInputType.streetAddress,
                 obscureText: false,
                 hintText: 'Receiver Address',
                 prefixIcon: Icons.location_on,
                 controller: receiverAddressController,
                 validator: (value) => value == null || value.isEmpty
-                    ? 'Please enter receiver address'
+                    ? 'Please enter sender address'
                     : null,
               ),
-              SizedBox(height: 15.h),
 
-              // Shipping Cost
+              // Shipment Type
               StyledFormField(
-                width: 600,
+                width: double.infinity,
+                keyboardType: TextInputType.streetAddress,
+                obscureText: false,
+                hintText: 'Shipment Type',
+                prefixIcon: Icons.trolley,
+                controller: shipmentTypeController,
+                validator: (value) => value == null || value.isEmpty
+                    ? 'Please enter sender address'
+                    : null,
+              ),
+              // Shipment Weight
+              StyledFormField(
+                suffix: Text(
+                  "kg",
+                  style: appStyle(
+                      size: 12.sp,
+                      color: Kcolor.primary,
+                      fontWeight: FontWeight.w400),
+                ),
+                width: double.infinity,
                 keyboardType: TextInputType.number,
                 obscureText: false,
-                hintText: 'Shipping Cost',
-                prefixIcon: Icons.attach_money,
-                controller: shippingCostController,
+                hintText: 'Shipment Weight',
+                prefixIcon: Icons.scale_rounded,
+                controller: shipmentWeightController,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter shipping cost';
+                    return 'Please enter shipment weight';
+                  }
+                  if (double.tryParse(value) == null) {
+                    return 'Please enter a valid number';
+                  }
+                  return null;
+                },
+              ),
+              // Shipment length
+              StyledFormField(
+                width: double.infinity,
+                keyboardType: TextInputType.number,
+                obscureText: false,
+                hintText: 'Shipment Length',
+                prefixIcon: Icons.trolley,
+                suffix: Text(
+                  "cm",
+                  style: appStyle(
+                      size: 12.sp,
+                      color: Kcolor.primary,
+                      fontWeight: FontWeight.w400),
+                ),
+                controller: shipmentLengthController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter shipment Size';
+                  }
+                  if (double.tryParse(value) == null) {
+                    return 'Please enter a valid number';
+                  }
+                  return null;
+                },
+              ),
+              //width
+              StyledFormField(
+                suffix: Text(
+                  "cm",
+                  style: appStyle(
+                      size: 12.sp,
+                      color: Kcolor.primary,
+                      fontWeight: FontWeight.w400),
+                ),
+                width: double.infinity,
+                keyboardType: TextInputType.number,
+                obscureText: false,
+                hintText: 'Shipment Width',
+                prefixIcon: Icons.trolley,
+                controller: shipmentWidthController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter shipment Size';
+                  }
+                  if (double.tryParse(value) == null) {
+                    return 'Please enter a valid number';
+                  }
+                  return null;
+                },
+              ),
+              //height
+              StyledFormField(
+                suffix: Text(
+                  "cm",
+                  style: appStyle(
+                      size: 12.sp,
+                      color: Kcolor.primary,
+                      fontWeight: FontWeight.w400),
+                ),
+                width: double.infinity,
+                keyboardType: TextInputType.number,
+                obscureText: false,
+                hintText: 'Shipment Height',
+                prefixIcon: Icons.trolley,
+                controller: shipmentHeightController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter shipment Size';
                   }
                   if (double.tryParse(value) == null) {
                     return 'Please enter a valid number';
@@ -146,6 +246,7 @@ class _MakeOrderScreenState extends State<MakeOrderScreen> {
               ),
 
               SizedBox(height: 50.h),
+              //btn
               Center(
                 child: Obx(
                   () => ElevBtn1(
@@ -166,21 +267,31 @@ class _MakeOrderScreenState extends State<MakeOrderScreen> {
                     textColor: Kcolor.background,
                     bgColor: Kcolor.primary,
                     func: () {
-                      if (senderAddressController.text.isNotEmpty &&
-                          receiverAddressController.text.isNotEmpty &&
-                          shippingCostController.text.isNotEmpty) {
+                      if (receiverAddressController.text.isNotEmpty &&
+                          shipmentHeightController.text.isNotEmpty &&
+                          shipmentWidthController.text.isNotEmpty &&
+                          shipmentLengthController.text.isNotEmpty &&
+                          shipmentWeightController.text.isNotEmpty &&
+                          shipmentTypeController.text.isNotEmpty) {
                         orderController.addShipment(ShipmentModel(
+                          shipmentType: shipmentTypeController.text,
+                          shipmentWeight:
+                              double.parse(shipmentWeightController.text),
+                          shipmentSize: {
+                            "width": shipmentWidthController.text,
+                            "height": shipmentHeightController.text,
+                            "length": shipmentLengthController.text,
+                          },
                           submitedDate:
                               "${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year}",
                           senderId:
                               customerController.currentCustomer.value.uid,
                           senderName: customerController
                               .currentCustomer.value.companyName,
-                          senderAddress: senderAddressController.text,
+                          senderAddress: customerController
+                              .currentCustomer.value.companyAddress,
                           receiverAddress: receiverAddressController.text,
                           shipmentStatus: ShipmentStatus.waitingApproval,
-                          shippingCost:
-                              double.parse(shippingCostController.text),
                         ));
                       }
                     },

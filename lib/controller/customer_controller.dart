@@ -32,7 +32,7 @@ class CustomerController extends GetxController {
   final _auth = FirebaseAuth.instance;
   final DatabaseReference _databaseReference =
       FirebaseDatabase.instance.ref().child('customers');
-  var CustomersList = <CustomerModel>[].obs;
+  var customersList = <CustomerModel>[].obs;
   Rx<CustomerModel> currentCustomer = CustomerModel(
     uid: '',
     companyName: '',
@@ -43,17 +43,20 @@ class CustomerController extends GetxController {
     companyRegistrationNumber: '',
     companyImportLicenseNumber: '',
   ).obs;
-  final DatabaseReference customerRef =
-      FirebaseDatabase.instance.ref('customers');
+
   @override
   void onInit() async {
     super.onInit();
-    fetchAllCustomers();
-    _auth.currentUser != null
-        ? fetchCurrentCustomer(_auth.currentUser!.uid)
-        : null;
-  }
+    // fetchAllCustomers();
 
+    // Wait for auth to initialize and check if user exists
+    await Future.delayed(Duration.zero); // Give time for auth to initialize
+    if (_auth.currentUser != null) {
+      fetchCurrentCustomer(_auth.currentUser!.uid);
+    } else {
+      print('No authenticated user found');
+    }
+  }
 //add user
 
   Future<void> addCustomer(CustomerModel customer) async {
@@ -64,27 +67,37 @@ class CustomerController extends GetxController {
 
   // Method to fetch a specific user's data
   void fetchCurrentCustomer(String customerId) {
-    customerRef.child(customerId).onValue.listen((event) {
+    if (customerId.isEmpty) {
+      print('Invalid customer ID');
+      return;
+    }
+
+    _databaseReference.child(customerId).onValue.listen((event) {
       if (event.snapshot.exists) {
-        // Ensure the snapshot contains valid data
-        final data = event.snapshot.value as Map<dynamic, dynamic>?;
+        final data = event.snapshot.value;
         if (data != null) {
-          // Cast the data to Map<String, dynamic> safely
-          Map<String, dynamic> customerData = Map<String, dynamic>.from(data);
-          // print(userData);
-          currentCustomer.value = CustomerModel.fromFirebase(customerData);
+          try {
+            Map<String, dynamic> customerData =
+                Map<String, dynamic>.from(data as Map);
+            currentCustomer.value = CustomerModel.fromFirebase(customerData);
+          } catch (e) {
+            print('Error parsing customer data: $e');
+          }
         } else {
           print('User data is null');
         }
       } else {
-        print('User not found in the database.');
+        print('User not found in the database - creating new record');
+        // Consider creating a new customer record here if appropriate
       }
+    }, onError: (error) {
+      print('Error fetching customer: $error');
     });
   }
 
 // Fetch all drivers from the database
   Future<void> fetchAllCustomers() async {
-    customerRef.onValue.listen((event) {
+    _databaseReference.onValue.listen((event) {
       final List<CustomerModel> updatedUsers = [];
 
       // Cast the data properly to avoid type errors
@@ -98,14 +111,14 @@ class CustomerController extends GetxController {
           updatedUsers.add(CustomerModel.fromFirebase(userData));
         });
 
-        CustomersList.value = updatedUsers; // Update the observable list
+        customersList.value = updatedUsers; // Update the observable list
       }
     });
   }
 
 // Listen for real-time updates
   void listenToCustomerData(String customerId) {
-    customerRef.child(customerId).onValue.listen((event) {
+    _databaseReference.child(customerId).onValue.listen((event) {
       if (event.snapshot.value != null) {
         Map<String, dynamic> customerData =
             Map<String, dynamic>.from(event.snapshot.value as Map);
@@ -156,7 +169,7 @@ class CustomerController extends GetxController {
         break;
     }
     try {
-      await customerRef.child(customerId).update(updatedData);
+      await _databaseReference.child(customerId).update(updatedData);
     } catch (e) {
       getxSnackbar(title: "Error", msg: "Failed to update profile: $e");
     } finally {

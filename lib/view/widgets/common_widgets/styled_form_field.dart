@@ -13,15 +13,17 @@ class StyledFormField extends StatelessWidget {
       required this.obscureText,
       this.controller,
       required this.width,
-      this.suffixIcon});
+      this.suffixIcon,
+      this.suffix});
   final String hintText;
   final IconData? prefixIcon;
   final Widget? suffixIcon;
+  final Widget? suffix;
   final TextInputType keyboardType;
   final String? Function(String?)? validator;
   final bool obscureText;
   final TextEditingController? controller;
-  final int width;
+  final double width;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -40,7 +42,7 @@ class StyledFormField extends StatelessWidget {
               size: 13.sp,
               color: Kcolor.primary.withOpacity(0.2),
               fontWeight: FontWeight.w400),
-          suffix: suffixIcon,
+          suffix: suffix,
           prefixIcon: Icon(prefixIcon, color: Kcolor.primary),
           alignLabelWithHint: true,
           constraints: BoxConstraints(minHeight: 50.h, maxWidth: 400.w),

@@ -1,10 +1,11 @@
-// ignore_for_file: invalid_use_of_protected_member
+// ignore_for_file: invalid_use_of_protected_member, deprecated_member_use
 
 import 'package:final_project_customer_website/constants/colors.dart';
 import 'package:final_project_customer_website/constants/text.dart';
 import 'package:final_project_customer_website/controller/customer_controller.dart';
 import 'package:final_project_customer_website/controller/order_controller.dart';
-import 'package:final_project_customer_website/view/widgets/history_screen_widgets/order_card_widget.dart';
+import 'package:final_project_customer_website/view/widgets/history_screen_widgets/history_header_widget.dart';
+import 'package:final_project_customer_website/view/widgets/history_screen_widgets/orders_listview.dart';
 import 'package:final_project_customer_website/view/widgets/history_screen_widgets/search_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -54,71 +55,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       ],
                     ),
                     SizedBox(height: 40.h),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        SizedBox(
-                          width: 200.w,
-                          child: Text(
-                            "Order ID",
-                            style: appStyle(
-                                size: 15.sp,
-                                color: Kcolor.primary,
-                                fontWeight: FontWeight.w700),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 200.w,
-                          child: Text(
-                            "Date",
-                            style: appStyle(
-                                size: 15.sp,
-                                color: Kcolor.primary,
-                                fontWeight: FontWeight.w700),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 200.w,
-                          child: Text(
-                            "From",
-                            style: appStyle(
-                                size: 15.sp,
-                                color: Kcolor.primary,
-                                fontWeight: FontWeight.w700),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 200.w,
-                          child: Text(
-                            "To",
-                            style: appStyle(
-                                size: 15.sp,
-                                color: Kcolor.primary,
-                                fontWeight: FontWeight.w700),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 200.w,
-                          child: Text(
-                            "Status",
-                            style: appStyle(
-                                size: 15.sp,
-                                color: Kcolor.primary,
-                                fontWeight: FontWeight.w700),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 200.w,
-                          child: Text(
-                            "Cost",
-                            style: appStyle(
-                                size: 15.sp,
-                                color: Kcolor.primary,
-                                fontWeight: FontWeight.w700),
-                          ),
-                        ),
-                      ],
-                    ),
+                    const HistoryHeader(),
                     SizedBox(height: 20.h),
                     customerController.currentCustomer.value.orders.isEmpty
                         ? Center(
@@ -133,71 +70,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               ),
                             ),
                           )
-                        : ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: customerController
-                                .currentCustomer.value.orders.length,
-                            itemBuilder: (context, index) {
-                              return Obx(
-                                () => OrderCardWidget(
-                                  cost: ordersController
-                                      .shipmentsList.value[index].shippingCost
-                                      .toString(),
-                                  date: ordersController
-                                      .shipmentsList.value[index].submitedDate,
-                                  from: ordersController
-                                      .shipmentsList.value[index].senderAddress,
-                                  id: ordersController
-                                      .shipmentsList.value[index].shipmentId,
-                                  status: ordersController
-                                              .shipmentsList
-                                              .value[index]
-                                              .shipmentStatus
-                                              .name ==
-                                          "waitingApproval"
-                                      ? "Waiting Approval"
-                                      : ordersController
-                                                  .shipmentsList
-                                                  .value[index]
-                                                  .shipmentStatus
-                                                  .name ==
-                                              "returned"
-                                          ? "Returned"
-                                          : ordersController
-                                                      .shipmentsList
-                                                      .value[index]
-                                                      .shipmentStatus
-                                                      .name ==
-                                                  "pending"
-                                              ? "Pending"
-                                              : ordersController
-                                                          .shipmentsList
-                                                          .value[index]
-                                                          .shipmentStatus
-                                                          .name ==
-                                                      "delivered"
-                                                  ? "Delivered"
-                                                  : ordersController
-                                                              .shipmentsList
-                                                              .value[index]
-                                                              .shipmentStatus
-                                                              .name ==
-                                                          "inTransit"
-                                                      ? "In Transit"
-                                                      : ordersController
-                                                                  .shipmentsList
-                                                                  .value[index]
-                                                                  .shipmentStatus
-                                                                  .name ==
-                                                              "waitingPickup"
-                                                          ? "Waiting Pickup"
-                                                          : "Cancelled",
-                                  to: ordersController
-                                      .shipmentsList[index].receiverAddress,
-                                ),
-                              );
-                            }),
+                        : const OrdersListView(),
                   ],
                 ),
               ),
