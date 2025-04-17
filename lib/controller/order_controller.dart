@@ -158,4 +158,24 @@ class OrderController extends GetxController {
       }
     });
   }
+
+  Future<void> updateShipmentOrderId(String shipmentId, String orderId) async {
+    try {
+      await _shipmentRef.child(shipmentId).update({'orderId': orderId});
+    } catch (e) {
+      throw Exception("Failed to update shipment order ID: $e");
+    }
+  }
+
+  Future<void> updateShipmentPaymentStatus(
+      String shipmentId, bool paymentStatus) async {
+    try {
+      await _shipmentRef.child(shipmentId).update({'isPaid': paymentStatus});
+      await _shipmentRef
+          .child(shipmentId)
+          .update({'shipmentStatus': ShipmentStatus.inTransit.name});
+    } catch (e) {
+      throw Exception("Failed to update shipment payment status: $e");
+    }
+  }
 }

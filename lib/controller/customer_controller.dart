@@ -50,7 +50,8 @@ class CustomerController extends GetxController {
     // fetchAllCustomers();
 
     // Wait for auth to initialize and check if user exists
-    await Future.delayed(Duration.zero); // Give time for auth to initialize
+    await Future.delayed(
+        const Duration(seconds: 0)); // Give time for auth to initialize
     if (_auth.currentUser != null) {
       fetchCurrentCustomer(_auth.currentUser!.uid);
     } else {

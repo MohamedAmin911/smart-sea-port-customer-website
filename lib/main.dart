@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
     options: const FirebaseOptions(
         apiKey: "AIzaSyDBicds8Fdspr6n377IdIRLjRAsOXzL124",
@@ -54,7 +55,11 @@ class MyApp extends StatelessWidget {
               colorScheme: ColorScheme.fromSeed(seedColor: Kcolor.background),
               useMaterial3: false,
             ),
-            home: const MainScreen(),
+            home:
+
+                // const PaymentScreen(),
+
+                const MainScreen(),
           );
         });
   }

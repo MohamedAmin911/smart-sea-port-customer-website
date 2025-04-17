@@ -132,49 +132,35 @@ class _TabsScreenState extends State<TabsScreen>
                   ),
                 ),
               ),
-        body: customerController.currentCustomer.value.accountStatus.name ==
-                AccountStatus.waitingApproval.name
-            ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Your Account Is Being Reviewed",
-                      style: appStyle(
-                        size: 40.sp,
-                        color: Kcolor.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      "You will be notified once your account is approved",
-                      style: appStyle(
-                        size: 16.sp,
-                        color: Kcolor.primary,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ],
-                ),
-              )
+        body: customerController.currentCustomer.value ==
+                CustomerModel(
+                  uid: '',
+                  companyName: '',
+                  companyAddress: '',
+                  companyEmail: '',
+                  companyPhoneNumber: '',
+                  companyCity: '',
+                  companyRegistrationNumber: '',
+                  companyImportLicenseNumber: '',
+                )
+            ? const Center(child: CircularProgressIndicator())
             : customerController.currentCustomer.value.accountStatus.name ==
-                    AccountStatus.inactive.name
+                    AccountStatus.waitingApproval.name
                 ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Your Account Is Deactivated",
+                          "Your Account Is Being Reviewed",
                           style: appStyle(
                             size: 40.sp,
                             color: Kcolor.primary,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w400,
                           ),
                         ),
                         SizedBox(height: 8.h),
                         Text(
-                          "Please contact support for more information",
+                          "You will be notified once your account is approved",
                           style: appStyle(
                             size: 16.sp,
                             color: Kcolor.primary,
@@ -184,15 +170,41 @@ class _TabsScreenState extends State<TabsScreen>
                       ],
                     ),
                   )
-                : PageView(
-                    physics: const NeverScrollableScrollPhysics(),
-                    controller: controller,
-                    children: const [
-                      TrackingScreen(),
-                      HistoryScreen(),
-                      ProfileScreen(),
-                    ],
-                  ),
+                : customerController.currentCustomer.value.accountStatus.name ==
+                        AccountStatus.inactive.name
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Your Account Is Deactivated",
+                              style: appStyle(
+                                size: 40.sp,
+                                color: Kcolor.primary,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            SizedBox(height: 8.h),
+                            Text(
+                              "Please contact support for more information",
+                              style: appStyle(
+                                size: 16.sp,
+                                color: Kcolor.primary,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : PageView(
+                        physics: const NeverScrollableScrollPhysics(),
+                        controller: controller,
+                        children: const [
+                          TrackingScreen(),
+                          HistoryScreen(),
+                          ProfileScreen(),
+                        ],
+                      ),
       ),
     );
   }

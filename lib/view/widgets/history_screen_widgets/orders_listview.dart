@@ -23,12 +23,19 @@ class OrdersListView extends StatelessWidget {
         itemBuilder: (context, index) {
           return Obx(
             () => OrderCardWidget(
-              cost: ordersController.shipmentsList.value[index].shippingCost
-                          .toString() ==
-                      "0"
-                  ? "Being estimated"
+              cost: ordersController
+                          .shipmentsList.value[index].shipmentStatus.name ==
+                      ShipmentStatus.cancelled.name
+                  ? "Cancelled"
                   : ordersController.shipmentsList.value[index].shippingCost
-                      .toString(),
+                                  .toString() ==
+                              "0" ||
+                          ordersController.shipmentsList.value[index]
+                                  .shipmentStatus.name ==
+                              ShipmentStatus.waitngPayment.name
+                      ? "Being estimated"
+                      : ordersController.shipmentsList.value[index].shippingCost
+                          .toString(),
               date: ordersController.shipmentsList.value[index].submitedDate,
               from: ordersController.shipmentsList.value[index].senderAddress,
               id: ordersController.shipmentsList.value[index].shipmentId,
