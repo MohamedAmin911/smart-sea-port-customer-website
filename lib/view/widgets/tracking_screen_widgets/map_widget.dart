@@ -1,13 +1,7 @@
 import 'package:final_project_customer_website/constants/colors.dart';
-import 'package:final_project_customer_website/controller/order_controller.dart';
-import 'package:final_project_customer_website/controller/ship_tracking_controller.dart';
-import 'package:final_project_customer_website/model/shipment_model.dart';
-
 import 'package:final_project_customer_website/view/widgets/tracking_screen_widgets/google_maps_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class MapWidget extends StatelessWidget {
   const MapWidget({
@@ -16,8 +10,8 @@ class MapWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ShipController shipController = Get.put(ShipController());
-    final OrderController ordersController = Get.put(OrderController());
+    // final ShipController shipController = Get.put(ShipController());
+    // final OrderController ordersController = Get.put(OrderController());
 
     return Container(
       width: 600.w,

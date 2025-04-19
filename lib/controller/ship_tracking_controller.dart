@@ -15,7 +15,7 @@ class ShipController extends GetxController {
   final Rx<LatLng> currentPosition = const LatLng(0, 0).obs;
   final Rx<LatLng> destinationPosition = const LatLng(0, 0).obs;
   final OrderController orderController = Get.put(OrderController());
-
+  final RxList<LatLng> routePoints2 = <LatLng>[].obs;
   final RxList<LatLng> routePoints = <LatLng>[].obs;
   late DatabaseReference _firebaseRef;
 
@@ -73,6 +73,7 @@ class ShipController extends GetxController {
 
       // Continue from current position
       routePoints.clear();
+      _generateCurvedRoute2(sourcePosition.value, destinationPosition.value);
       _generateCurvedRoute(currentPosition.value, destinationPosition.value);
       _startMovement(); // resume from current
     } else {
@@ -103,6 +104,25 @@ class ShipController extends GetxController {
     }
   }
 
+  void _generateCurvedRoute2(LatLng start, LatLng end) {
+    const int numSteps = 50;
+    final double deltaLat = end.latitude - start.latitude;
+    final double deltaLng = end.longitude - start.longitude;
+
+    for (int i = 0; i <= numSteps; i++) {
+      double t = i / numSteps;
+      double lat = _lerp(start.latitude, end.latitude, t);
+      double lng = _lerp(start.longitude, end.longitude, t);
+
+      double curveStrength = 0.05;
+      double offsetLat = -deltaLng * curveStrength * sin(pi * t);
+      double offsetLng = deltaLat * curveStrength * sin(pi * t);
+
+      LatLng curvedPoint = LatLng(lat + offsetLat, lng + offsetLng);
+      routePoints2.add(curvedPoint);
+    }
+  }
+
   Future<void> _uploadRouteToFirebase() async {
     final shipmentId = _getCurrentShipmentId();
     if (shipmentId == null) return;
@@ -127,7 +147,7 @@ class ShipController extends GetxController {
     int index = 0;
     _movementTimer?.cancel();
 
-    _movementTimer = Timer.periodic(const Duration(seconds: 2), (timer) {
+    _movementTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (index >= routePoints.length) {
         timer.cancel();
         return;

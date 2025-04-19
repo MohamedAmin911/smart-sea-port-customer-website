@@ -50,10 +50,15 @@ class _ShipMapWidgetState extends State<ShipMapWidget> {
   Widget build(BuildContext context) {
     return Obx(() {
       return GoogleMap(
+        compassEnabled: false,
+        mapToolbarEnabled: false,
+        scrollGesturesEnabled: true,
+        zoomControlsEnabled: false,
+        rotateGesturesEnabled: true,
         mapType: MapType.normal,
         initialCameraPosition: CameraPosition(
           target: controller.currentPosition.value,
-          zoom: 3,
+          zoom: 2,
         ),
         markers: {
           Marker(
@@ -81,7 +86,7 @@ class _ShipMapWidgetState extends State<ShipMapWidget> {
               polylineId: const PolylineId('route'),
               color: Kcolor.accent,
               width: 4,
-              points: controller.routePoints,
+              points: controller.routePoints2,
             ),
         },
         onMapCreated: (GoogleMapController controller) {
