@@ -46,14 +46,19 @@ dependencies:
   http: null
   image_network: null
   image_picker: null
-  latlong2: null
+  # latlong2: null
   location: null
   paymob_flutter_lib: ^1.0.9
   shared_preferences: ^2.4.0
-  webview_flutter: ^4.10.0
-  webview_flutter_platform_interface: 
-  webview_flutter_android: 
-  webview_flutter_wkwebview:
+  geocoding:
+  google_maps_flutter:
+  country_picker:
+  google_maps_webservice: 
+  google_maps_flutter_web:
+
+ 
+
+
 dev_dependencies:
   flutter_lints: ^4.0.0
   flutter_test:
@@ -74,6 +79,7 @@ flutter:
     - assets/fonts/
     - assets/png/
     - assets/svg/
+    - assets/map_style.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
