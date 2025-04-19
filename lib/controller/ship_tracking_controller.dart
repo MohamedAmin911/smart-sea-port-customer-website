@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
+import 'package:final_project_customer_website/constants/apikeys.dart';
+import 'package:final_project_customer_website/controller/order_controller.dart';
+import 'package:final_project_customer_website/model/shipment_model.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_database/firebase_database.dart';
@@ -8,21 +11,30 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class ShipController extends GetxController {
   final FirebaseDatabase _database = FirebaseDatabase.instance;
+  final Rx<LatLng> sourcePosition = const LatLng(0, 0).obs;
+  final Rx<LatLng> currentPosition = const LatLng(0, 0).obs;
+  final Rx<LatLng> destinationPosition = const LatLng(0, 0).obs;
+  final OrderController orderController = Get.put(OrderController());
 
-  final Rx<LatLng> currentPosition = LatLng(0, 0).obs;
-  final Rx<LatLng> destinationPosition = LatLng(0, 0).obs;
   final RxList<LatLng> routePoints = <LatLng>[].obs;
+  late DatabaseReference _firebaseRef;
 
   Timer? _movementTimer;
 
-  /// Replace with your actual Google Maps API key
-  final String _googleApiKey = 'AlzaSyBYf_mjjnqslJw3Grke69Kq0D22hcrlnjS';
+  @override
+  void onInit() async {
+    super.onInit();
+    await initializePositions(
+      orderController.shipmentsList
+          .firstWhere((element) =>
+              element.shipmentStatus.name == ShipmentStatus.inTransit.name)
+          .senderAddress,
+    );
+  }
 
-  /// Convert a country name to its LatLng using Google Geocoding API
-  Future<LatLng> _getCoordinates(String countryName) async {
+  Future<LatLng> _getCoordinates(String place) async {
     final url = Uri.parse(
-        'https://maps.gomaps.pro/maps/api/geocode/json?address=$countryName&key=$_googleApiKey');
-
+        'https://maps.gomaps.pro/maps/api/geocode/json?address=$place&key=${KapiKeys.googleMapsApiKey}');
     final response = await http.get(url);
     final data = json.decode(response.body);
 
@@ -30,36 +42,59 @@ class ShipController extends GetxController {
       final location = data['results'][0]['geometry']['location'];
       return LatLng(location['lat'], location['lng']);
     } else {
-      throw Exception('Failed to get coordinates for $countryName');
+      throw Exception('Failed to get coordinates for $place');
     }
   }
 
-  /// Initialize route from selected source country to Egypt
   Future<void> initializePositions(String sourceCountry) async {
-    currentPosition.value = await _getCoordinates(sourceCountry);
+    final shipmentId = _getCurrentShipmentId();
+    if (shipmentId == null) return;
+
+    sourcePosition.value = await _getCoordinates(sourceCountry);
     destinationPosition.value = await _getCoordinates('Egypt');
 
-    routePoints.clear();
-    _generateCurvedRoute(currentPosition.value, destinationPosition.value);
-    _startMovement();
+    _startFirebaseListener(); // always listen
+
+    final positionSnapshot =
+        await _database.ref('shipPosition/$shipmentId').get();
+
+    if (positionSnapshot.exists) {
+      final data = positionSnapshot.value as Map;
+      currentPosition.value = LatLng(
+        (data['latitude'] as num).toDouble(),
+        (data['longitude'] as num).toDouble(),
+      );
+
+      if (_arePositionsEqual(
+          currentPosition.value, destinationPosition.value)) {
+        // Already at destination
+        return;
+      }
+
+      // Continue from current position
+      routePoints.clear();
+      _generateCurvedRoute(currentPosition.value, destinationPosition.value);
+      _startMovement(); // resume from current
+    } else {
+      currentPosition.value = sourcePosition.value;
+      routePoints.clear();
+      _generateCurvedRoute(sourcePosition.value, destinationPosition.value);
+      await _uploadRouteToFirebase();
+      _startMovement();
+    }
   }
 
-  /// Simulates a curved (overseas-like) path
   void _generateCurvedRoute(LatLng start, LatLng end) {
     const int numSteps = 50;
-
     final double deltaLat = end.latitude - start.latitude;
     final double deltaLng = end.longitude - start.longitude;
 
     for (int i = 0; i <= numSteps; i++) {
       double t = i / numSteps;
-
-      // Basic straight-line interpolation
       double lat = _lerp(start.latitude, end.latitude, t);
       double lng = _lerp(start.longitude, end.longitude, t);
 
-      // Add curved offset — push point perpendicular to the path using sine
-      double curveStrength = 0.05; // tweak for higher/lower arc
+      double curveStrength = 0.05;
       double offsetLat = -deltaLng * curveStrength * sin(pi * t);
       double offsetLng = deltaLat * curveStrength * sin(pi * t);
 
@@ -68,12 +103,31 @@ class ShipController extends GetxController {
     }
   }
 
-  /// Start moving along the route (1 point every 5 seconds)
+  Future<void> _uploadRouteToFirebase() async {
+    final shipmentId = _getCurrentShipmentId();
+    if (shipmentId == null) return;
+
+    final routeMap = {
+      'shipmentId': shipmentId,
+      'route': routePoints
+          .map((point) => {
+                'lat': point.latitude,
+                'lng': point.longitude,
+              })
+          .toList(),
+    };
+
+    await _database.ref('shipRoutes/$shipmentId').set(routeMap);
+  }
+
   void _startMovement() {
+    final shipmentId = _getCurrentShipmentId();
+    if (shipmentId == null) return;
+
     int index = 0;
     _movementTimer?.cancel();
 
-    _movementTimer = Timer.periodic(Duration(seconds: 5), (timer) {
+    _movementTimer = Timer.periodic(const Duration(seconds: 2), (timer) {
       if (index >= routePoints.length) {
         timer.cancel();
         return;
@@ -81,26 +135,62 @@ class ShipController extends GetxController {
 
       final newPos = routePoints[index];
       currentPosition.value = newPos;
-      _updateFirebasePosition(newPos);
+
+      _database.ref('shipPosition/$shipmentId').set({
+        'latitude': newPos.latitude,
+        'longitude': newPos.longitude,
+      });
+
+      if (_arePositionsEqual(newPos, destinationPosition.value)) {
+        timer.cancel();
+        return;
+      }
+
       index++;
     });
   }
 
-  /// Update the current position in Firebase
-  void _updateFirebasePosition(LatLng position) {
-    _database.ref('shipPosition').set({
-      'latitude': position.latitude,
-      'longitude': position.longitude,
+  void _startFirebaseListener() {
+    final shipmentId = _getCurrentShipmentId();
+    if (shipmentId == null) return;
+
+    _firebaseRef = _database.ref('shipPosition/$shipmentId');
+    _firebaseRef.onValue.listen((event) {
+      final data = event.snapshot.value as Map?;
+      if (data != null) {
+        currentPosition.value = LatLng(
+          (data['latitude'] as num).toDouble(),
+          (data['longitude'] as num).toDouble(),
+        );
+      }
     });
   }
 
-  /// Linear interpolation helper
+  String? _getCurrentShipmentId() {
+    try {
+      return orderController.shipmentsList
+          .firstWhere(
+            (shipment) =>
+                shipment.shipmentStatus.name == ShipmentStatus.inTransit.name,
+          )
+          .shipmentId;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  bool _arePositionsEqual(LatLng pos1, LatLng pos2,
+      {double threshold = 0.001}) {
+    return (pos1.latitude - pos2.latitude).abs() < threshold &&
+        (pos1.longitude - pos2.longitude).abs() < threshold;
+  }
+
   double _lerp(double a, double b, double t) => a + (b - a) * t;
 
-  /// Optional: clean up timer
   @override
   void onClose() {
     _movementTimer?.cancel();
+    _firebaseRef.onDisconnect();
     super.onClose();
   }
 }

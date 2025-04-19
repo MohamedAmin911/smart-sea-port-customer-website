@@ -178,4 +178,24 @@ class OrderController extends GetxController {
       throw Exception("Failed to update shipment payment status: $e");
     }
   }
+
+  Future<void> updateShipmentSenderLocation(
+      String country, String shipmentId) async {
+    try {
+      await _shipmentRef.child(shipmentId).update({'senderAddress': country});
+    } catch (e) {
+      throw Exception("Failed to update shipment payment status: $e");
+    }
+  }
+
+  Future<void> updateShipmentStatus(
+      String shipmentId, ShipmentStatus shipmentStatus) async {
+    try {
+      await _shipmentRef
+          .child(shipmentId)
+          .update({'shipmentStatus': shipmentStatus.name});
+    } catch (e) {
+      throw Exception("Failed to update shipment status: $e");
+    }
+  }
 }

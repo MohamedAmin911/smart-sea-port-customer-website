@@ -1,10 +1,12 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:country_picker/country_picker.dart';
 import 'package:final_project_customer_website/constants/colors.dart';
 import 'package:final_project_customer_website/constants/icon_assets.dart';
 import 'package:final_project_customer_website/constants/text.dart';
 import 'package:final_project_customer_website/controller/customer_controller.dart';
 import 'package:final_project_customer_website/controller/order_controller.dart';
+import 'package:final_project_customer_website/controller/ship_tracking_controller.dart';
 import 'package:final_project_customer_website/model/shipment_model.dart';
 import 'package:final_project_customer_website/view/widgets/common_widgets/elev_btn.dart';
 import 'package:final_project_customer_website/view/widgets/common_widgets/styled_form_field.dart';
@@ -35,6 +37,9 @@ class _MakeOrderScreenState extends State<MakeOrderScreen> {
 
   final orderController = Get.put(OrderController());
   final customerController = Get.put(CustomerController());
+  final shipController = Get.put(ShipController());
+
+  String sourceCountry = "";
 
   @override
   void dispose() {
@@ -119,18 +124,63 @@ class _MakeOrderScreenState extends State<MakeOrderScreen> {
           child: Column(
             children: [
               SizedBox(height: 50.h),
-              // Receiver Address
-              StyledFormField(
+              // sender Address
+
+              SizedBox(
                 width: double.infinity,
-                keyboardType: TextInputType.streetAddress,
-                obscureText: false,
-                hintText: 'Receiver Address',
-                prefixIcon: Icons.location_on,
-                controller: receiverAddressController,
-                validator: (value) => value == null || value.isEmpty
-                    ? 'Please enter sender address'
-                    : null,
+                height: 45.h,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Kcolor.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(22.r),
+                    ),
+                    padding:
+                        EdgeInsets.symmetric(vertical: 15.h, horizontal: 20.w),
+                  ),
+                  onPressed: () {
+                    showCountryPicker(
+                      context: context,
+                      showPhoneCode: false,
+                      onSelect: (Country country) {
+                        setState(() {
+                          sourceCountry = country.name;
+                        });
+                      },
+                    );
+                  },
+                  child: Text(
+                    'Select Sender Country',
+                    style: appStyle(
+                        size: 15.sp,
+                        color: Kcolor.background,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
               ),
+              SizedBox(height: 30.h),
+              Container(
+                width: double.infinity,
+                height: 45.h,
+                decoration: BoxDecoration(
+                  border: Border.all(
+                      color: sourceCountry == ""
+                          ? Kcolor.primary.withOpacity(0.2)
+                          : Kcolor.primary),
+                  borderRadius: BorderRadius.circular(22.r),
+                ),
+                child: Center(
+                  child: Text(
+                      sourceCountry == "" ? "Sender Country" : sourceCountry,
+                      style: appStyle(
+                          size: 15.sp,
+                          color: sourceCountry == ""
+                              ? Kcolor.primary.withOpacity(0.2)
+                              : Kcolor.primary,
+                          fontWeight: FontWeight.w500)),
+                ),
+              ),
+              SizedBox(height: 30.h),
 
               // Shipment Type
               StyledFormField(
@@ -267,7 +317,7 @@ class _MakeOrderScreenState extends State<MakeOrderScreen> {
                     textColor: Kcolor.background,
                     bgColor: Kcolor.primary,
                     func: () {
-                      if (receiverAddressController.text.isNotEmpty &&
+                      if (sourceCountry != "" &&
                           shipmentHeightController.text.isNotEmpty &&
                           shipmentWidthController.text.isNotEmpty &&
                           shipmentLengthController.text.isNotEmpty &&
@@ -286,11 +336,11 @@ class _MakeOrderScreenState extends State<MakeOrderScreen> {
                               "${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year}",
                           senderId:
                               customerController.currentCustomer.value.uid,
-                          senderName: customerController
+                          receiverName: customerController
                               .currentCustomer.value.companyName,
-                          senderAddress: customerController
+                          senderAddress: sourceCountry,
+                          receiverAddress: customerController
                               .currentCustomer.value.companyAddress,
-                          receiverAddress: receiverAddressController.text,
                           shipmentStatus: ShipmentStatus.waitingApproval,
                         ));
                       }

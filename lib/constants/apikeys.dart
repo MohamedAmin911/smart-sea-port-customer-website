@@ -17,6 +17,8 @@ class KapiKeys {
       "pk_test_51REqaJED4hIlcoynQAOZCmFyMiBsGBw0I3gTToeMM7SjU52PqicZvtRZhOabyg7giBBHMIarScI4LuXTN3Wvu6A5005Sh9pOdg";
   static const stripeSecretKey =
       "sk_test_51REqaJED4hIlcoyn7Tc77t9IfcIfXphsc7vNgvg3ifzHGQ2XI9tRbD7viMuGtvhT5fn9thgfvJQyS95dJOk7f8qh000Fwep7AC";
+
+  static const googleMapsApiKey = "AlzaSy1SpYq8ZANlPYXVvN2NDVlzysZVY05Xhgy";
 }
 
 

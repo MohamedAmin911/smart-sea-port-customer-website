@@ -2,8 +2,10 @@ import 'package:dio/dio.dart' as dioo;
 import 'package:final_project_customer_website/constants/apikeys.dart';
 import 'package:final_project_customer_website/controller/customer_controller.dart';
 import 'package:final_project_customer_website/controller/order_controller.dart';
+import 'package:final_project_customer_website/controller/ship_tracking_controller.dart';
 import 'package:final_project_customer_website/model/shipment_model.dart';
 import 'package:final_project_customer_website/view/screens/iframes_screen.dart';
+import 'package:final_project_customer_website/view/screens/tracking_screen.dart';
 import 'package:get/get.dart';
 
 class PayMobController extends GetxController {
@@ -11,12 +13,15 @@ class PayMobController extends GetxController {
   void onInit() async {
     super.onInit();
     await getPaymentStatus(orderController.shipmentsList
-        .firstWhere((shipment) => shipment.orderId != "")
+        .firstWhere((shipment) =>
+            shipment.shipmentStatus.name == ShipmentStatus.waitngPayment.name)
         .orderId);
   }
 
   final CustomerController customerController = Get.put(CustomerController());
   final OrderController orderController = Get.put(OrderController());
+  final ShipController shipController = Get.put(ShipController());
+
   final dio = dioo.Dio();
   RxBool isPaid = false.obs;
   RxBool isLoading = false.obs;
@@ -28,44 +33,39 @@ class PayMobController extends GetxController {
       String paymentKey = await getPaymentKey(
           token, orderId.toString(), (100 * amount).toString());
 
-      await orderController.updateShipmentOrderId(
-          orderController.shipmentsList
-              .firstWhere((shipment) =>
-                  shipment.shipmentStatus.name ==
-                  ShipmentStatus.waitngPayment.name)
-              .shipmentId,
-          orderId.toString());
+      // Update the shipment with the order ID
+      final shipment = orderController.shipmentsList.firstWhere(
+        (shipment) =>
+            shipment.shipmentStatus.name == ShipmentStatus.waitngPayment.name,
+      );
 
+      await orderController.updateShipmentOrderId(
+          shipment.shipmentId, orderId.toString());
+
+      // Open payment iframe
       Get.dialog(
         PaymobPaymentDialog(
           paymentUrl:
               'https://accept.paymob.com/api/acceptance/iframes/914607?payment_token=$paymentKey',
           onCompletion: (success) async {
             if (success) {
-              // Verify payment with both Paymob and your server
               final verified = await verifyPayment(orderId.toString(), token) &&
                   await _verifyPaymentOnServer(paymentKey);
 
               if (verified) {
-                Get.snackbar('Success', 'Payment completed and verified!');
                 isPaid.value = true;
-              } else {
-                Get.snackbar(
-                    'Warning', 'Payment completed but verification failed');
-                isPaid.value = false;
+                // Update the shipment status
+                await orderController.updateShipmentPaymentStatus(
+                    shipment.shipmentId, true);
+                Get.offAll(() => TrackingScreen()); // Force navigation back
               }
-            } else {
-              Get.snackbar('Cancelled', 'Payment was not completed');
-              isPaid.value = false;
             }
           },
         ),
         barrierDismissible: false,
       );
+    } finally {
       isLoading.value = false;
-    } catch (e) {
-      Get.snackbar('Error', 'Payment failed: ${e.toString()}');
-      rethrow;
     }
   }
 
@@ -228,16 +228,26 @@ class PayMobController extends GetxController {
       isLoading.value = false;
 
       if (response.data["success"] == true) {
-        orderController.updateShipmentPaymentStatus(
+        await orderController.updateShipmentPaymentStatus(
             orderController.shipmentsList
                 .firstWhere((shipment) =>
                     shipment.shipmentStatus.name ==
                     ShipmentStatus.waitngPayment.name)
                 .shipmentId,
             true);
+
+        print("successsssssssssssssssssssssssssssss");
+        await orderController
+            .fetchUserShipments(customerController.currentCustomer.value.uid);
+
+        await shipController.initializePositions(orderController.shipmentsList
+            .firstWhere((shipment) =>
+                shipment.shipmentStatus.name == ShipmentStatus.inTransit.name)
+            .senderAddress);
+
         isLoading.value = false;
       } else {
-        orderController.updateShipmentPaymentStatus(
+        await orderController.updateShipmentPaymentStatus(
             orderController.shipmentsList
                 .firstWhere((shipment) =>
                     shipment.shipmentStatus.name ==

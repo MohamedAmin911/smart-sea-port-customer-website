@@ -60,8 +60,8 @@ class MyApp extends StatelessWidget {
             home:
 
                 // const PaymentScreen(),
-                ShipMapCombinedScreen(),
-            // const MainScreen(),
+                // ShipMapCombinedScreen(),
+                const MainScreen(),
           );
         });
   }

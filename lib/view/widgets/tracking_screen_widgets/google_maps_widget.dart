@@ -1,5 +1,8 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:async';
 
+import 'package:final_project_customer_website/constants/colors.dart';
 import 'package:final_project_customer_website/controller/ship_tracking_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,7 +15,7 @@ class ShipMapWidget extends StatefulWidget {
 }
 
 class _ShipMapWidgetState extends State<ShipMapWidget> {
-  final ShipController controller = Get.find<ShipController>();
+  final ShipController controller = Get.put(ShipController());
 
   final Completer<GoogleMapController> _controller = Completer();
 
@@ -23,7 +26,24 @@ class _ShipMapWidgetState extends State<ShipMapWidget> {
     rootBundle.loadString('assets/map_style.json').then((string) {
       _mapStyleString = string;
     });
+    _loadCustomMarker();
+
     super.initState();
+  }
+
+  BitmapDescriptor? shipIcon;
+  BitmapDescriptor? portIcon;
+
+  void _loadCustomMarker() async {
+    shipIcon = await BitmapDescriptor.asset(
+      const ImageConfiguration(size: Size(48, 48)),
+      'assets/png/ship.png',
+    );
+    portIcon = await BitmapDescriptor.asset(
+      const ImageConfiguration(size: Size(50, 50)),
+      'assets/png/port.png',
+    );
+    setState(() {}); // Refresh the UI once loaded
   }
 
   @override
@@ -33,25 +53,33 @@ class _ShipMapWidgetState extends State<ShipMapWidget> {
         mapType: MapType.normal,
         initialCameraPosition: CameraPosition(
           target: controller.currentPosition.value,
-          zoom: 4,
+          zoom: 3,
         ),
         markers: {
           Marker(
-            markerId: MarkerId('ship'),
-            position: controller.currentPosition.value,
-            infoWindow: InfoWindow(title: 'Ship'),
+            markerId: const MarkerId('source'),
+            position: controller.sourcePosition.value,
+            infoWindow: const InfoWindow(title: 'Source Country'),
+            icon: portIcon ?? BitmapDescriptor.defaultMarker,
           ),
           Marker(
-            markerId: MarkerId('destination'),
+            markerId: const MarkerId('ship'),
+            position: controller.currentPosition.value,
+            infoWindow: const InfoWindow(title: 'Ship'),
+            icon: shipIcon ?? BitmapDescriptor.defaultMarker,
+          ),
+          Marker(
+            markerId: const MarkerId('destination'),
             position: controller.destinationPosition.value,
-            infoWindow: InfoWindow(title: 'Egypt'),
+            infoWindow: const InfoWindow(title: 'Egypt'),
+            icon: portIcon ?? BitmapDescriptor.defaultMarker,
           ),
         },
         polylines: {
           if (controller.routePoints.isNotEmpty)
             Polyline(
-              polylineId: PolylineId('route'),
-              color: Colors.blueAccent,
+              polylineId: const PolylineId('route'),
+              color: Kcolor.accent,
               width: 4,
               points: controller.routePoints,
             ),

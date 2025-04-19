@@ -8,9 +8,11 @@ import 'package:final_project_customer_website/constants/text.dart';
 import 'package:final_project_customer_website/controller/customer_controller.dart';
 import 'package:final_project_customer_website/controller/order_controller.dart';
 import 'package:final_project_customer_website/controller/paymob_controller.dart';
+import 'package:final_project_customer_website/controller/ship_tracking_controller.dart';
 import 'package:final_project_customer_website/model/shipment_model.dart';
 import 'package:final_project_customer_website/view/screens/make_order_screen.dart';
 import 'package:final_project_customer_website/view/widgets/common_widgets/elev_btn.dart';
+import 'package:final_project_customer_website/view/widgets/tracking_screen_widgets/map_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -28,6 +30,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
   final customerController = Get.put(CustomerController());
   final OrderController ordersController = Get.put(OrderController());
   final PayMobController paymentController = Get.put(PayMobController());
+  final ShipController shipController = Get.put(ShipController());
 
   late final StreamSubscription<html.Event> _backButtonListener;
 
@@ -37,12 +40,44 @@ class _TrackingScreenState extends State<TrackingScreen> {
     _setupBackButtonListener();
   }
 
+  @override
+  void didChangeDependencies() async {
+    super.didChangeDependencies();
+
+    await _checkAndUpdateStatus();
+  }
+
+  Future<void> _checkAndUpdateStatus() async {
+    // Make sure we only fetch if shipments exist
+    if (ordersController.shipmentsList.isNotEmpty) {
+      final firstOrderId = ordersController.shipmentsList
+          .firstWhere((shipment) => shipment.orderId.isNotEmpty)
+          .orderId;
+
+      await paymentController.getPaymentStatus(firstOrderId);
+    }
+
+    // Optional: Force GetX UI update
+    ordersController.shipmentsList.refresh();
+  }
+
   void _setupBackButtonListener() {
     _backButtonListener = html.window.onPopState.listen((event) async {
-      await paymentController.getPaymentStatus(ordersController.shipmentsList
-          .firstWhere((shipment) => shipment.orderId != "")
-          .orderId);
+      await _checkAndUpdateStatus();
+
+      if (mounted) {
+        setState(() {});
+      }
+
+      // If still no rebuild, you can try:
+      // Get.forceAppUpdate();
     });
+  }
+
+  @override
+  void dispose() {
+    _backButtonListener.cancel();
+    super.dispose();
   }
 
   @override
@@ -166,9 +201,11 @@ class _TrackingScreenState extends State<TrackingScreen> {
                         ordersController.shipmentsList.value.any((shipment) =>
                                 shipment.shipmentStatus.name ==
                                 ShipmentStatus.inTransit.name)
-                            ? const Column(
+                            ? Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: [],
+                                children: [
+                                  MapWidget(),
+                                ],
                               )
                             :
 
