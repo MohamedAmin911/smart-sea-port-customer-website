@@ -12,7 +12,9 @@ import 'package:final_project_customer_website/controller/ship_tracking_controll
 import 'package:final_project_customer_website/model/shipment_model.dart';
 import 'package:final_project_customer_website/view/screens/make_order_screen.dart';
 import 'package:final_project_customer_website/view/widgets/common_widgets/elev_btn.dart';
+import 'package:final_project_customer_website/view/widgets/tracking_screen_widgets/calendar_widget.dart';
 import 'package:final_project_customer_website/view/widgets/tracking_screen_widgets/map_widget.dart';
+import 'package:final_project_customer_website/view/widgets/tracking_screen_widgets/shipment_details_summary_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -82,6 +84,14 @@ class _TrackingScreenState extends State<TrackingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // ShipmentModel currentShipment =
+    //     ordersController.shipmentsList.value.firstWhere(
+    //   (element) =>
+    //       element.shipmentStatus.name == ShipmentStatus.inTransit.name ||
+    //       element.shipmentStatus.name == ShipmentStatus.delivered.name ||
+    //       element.shipmentStatus.name == ShipmentStatus.waitingPickup.name ||
+    //       element.shipmentStatus.name == ShipmentStatus.unLoading.name,
+    // );
     return Obx(
       () => Scaffold(
         body: paymentController.isLoading.value
@@ -199,13 +209,84 @@ class _TrackingScreenState extends State<TrackingScreen> {
                         :
                         //in transit
                         ordersController.shipmentsList.value.any((shipment) =>
-                                shipment.shipmentStatus.name ==
-                                ShipmentStatus.inTransit.name)
-                            ? Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  MapWidget(),
-                                ],
+                                    shipment.shipmentStatus.name ==
+                                    ShipmentStatus.inTransit.name) ||
+                                ordersController.shipmentsList.value.any(
+                                    (shipment) =>
+                                        shipment.shipmentStatus.name ==
+                                        ShipmentStatus.delivered.name) ||
+                                ordersController.shipmentsList.value.any(
+                                    (shipment) =>
+                                        shipment.shipmentStatus.name ==
+                                        ShipmentStatus.waitingPickup.name) ||
+                                ordersController.shipmentsList.value.any(
+                                    (shipment) =>
+                                        shipment.shipmentStatus.name ==
+                                        ShipmentStatus.unLoading.name)
+                            ? Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 20.w, vertical: 20.h),
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      //shipment details summary
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Column(
+                                            children: [
+                                              ShipmentDetailsSummaryWidget(
+                                                  currentShipment:
+                                                      ordersController
+                                                          .shipmentsList.value
+                                                          .firstWhere(
+                                                (element) =>
+                                                    element.shipmentStatus.name == ShipmentStatus.inTransit.name ||
+                                                    element.shipmentStatus
+                                                            .name ==
+                                                        ShipmentStatus
+                                                            .delivered.name ||
+                                                    element.shipmentStatus
+                                                            .name ==
+                                                        ShipmentStatus
+                                                            .waitingPickup
+                                                            .name ||
+                                                    element.shipmentStatus
+                                                            .name ==
+                                                        ShipmentStatus
+                                                            .unLoading.name,
+                                              )),
+                                              SizedBox(height: 20.h),
+
+                                              //map
+                                              const MapWidget(),
+                                            ],
+                                          ),
+                                          SizedBox(width: 30.w),
+                                          Column(
+                                            children: [
+                                              SizedBox(
+                                                height: 28.h,
+                                              ),
+                                              //calendar
+                                              CustomCalendar(
+                                                selectedDate: DateTime(
+                                                    2025, 4, 24), // for example
+                                                onDateSelected: (selectedDate) {
+                                                  // Update your state here
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               )
                             :
 

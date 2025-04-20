@@ -1,4 +1,4 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use, invalid_use_of_protected_member
 
 import 'dart:async';
 
@@ -36,7 +36,7 @@ class _ShipMapWidgetState extends State<ShipMapWidget> {
 
   void _loadCustomMarker() async {
     shipIcon = await BitmapDescriptor.asset(
-      const ImageConfiguration(size: Size(48, 48)),
+      const ImageConfiguration(size: Size(30, 30)),
       'assets/png/ship.png',
     );
     portIcon = await BitmapDescriptor.asset(
@@ -68,16 +68,16 @@ class _ShipMapWidgetState extends State<ShipMapWidget> {
             icon: portIcon ?? BitmapDescriptor.defaultMarker,
           ),
           Marker(
-            markerId: const MarkerId('ship'),
-            position: controller.currentPosition.value,
-            infoWindow: const InfoWindow(title: 'Ship'),
-            icon: shipIcon ?? BitmapDescriptor.defaultMarker,
-          ),
-          Marker(
             markerId: const MarkerId('destination'),
             position: controller.destinationPosition.value,
             infoWindow: const InfoWindow(title: 'Egypt'),
             icon: portIcon ?? BitmapDescriptor.defaultMarker,
+          ),
+          Marker(
+            markerId: const MarkerId('ship'),
+            position: controller.currentPosition.value,
+            infoWindow: const InfoWindow(title: 'Ship'),
+            icon: shipIcon ?? BitmapDescriptor.defaultMarker,
           ),
         },
         polylines: {
@@ -85,8 +85,8 @@ class _ShipMapWidgetState extends State<ShipMapWidget> {
             Polyline(
               polylineId: const PolylineId('route'),
               color: Kcolor.accent,
-              width: 4,
-              points: controller.routePoints2,
+              width: 2,
+              points: controller.routePoints2.value,
             ),
         },
         onMapCreated: (GoogleMapController controller) {

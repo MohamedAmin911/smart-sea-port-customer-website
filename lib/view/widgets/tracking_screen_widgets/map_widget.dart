@@ -17,7 +17,8 @@ class MapWidget extends StatelessWidget {
       width: 600.w,
       height: 300.h,
       decoration: BoxDecoration(
-        border: Border.all(color: Kcolor.primary, width: 4.w),
+        border: Border.all(
+            color: Kcolor.primary.withValues(alpha: 0.2), width: 4.w),
         borderRadius: BorderRadius.circular(22.r),
       ),
       child:

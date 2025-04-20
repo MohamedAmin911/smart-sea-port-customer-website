@@ -46,6 +46,7 @@ dependencies:
   http: null
   image_network: null
   image_picker: null
+  table_calendar:
   # latlong2: null
   location: null
   paymob_flutter_lib: ^1.0.9

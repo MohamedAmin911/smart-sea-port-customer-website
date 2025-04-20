@@ -18,7 +18,7 @@ class KapiKeys {
   static const stripeSecretKey =
       "sk_test_51REqaJED4hIlcoyn7Tc77t9IfcIfXphsc7vNgvg3ifzHGQ2XI9tRbD7viMuGtvhT5fn9thgfvJQyS95dJOk7f8qh000Fwep7AC";
 
-  static const googleMapsApiKey = "AlzaSy1SpYq8ZANlPYXVvN2NDVlzysZVY05Xhgy";
+  static const googleMapsApiKey = "AlzaSymNevMyzEiYgdv7kS8nHd17caEIYzC32-E";
 }
 
 
