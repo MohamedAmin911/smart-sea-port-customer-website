@@ -21,6 +21,7 @@ void main() async {
         appId: "1:701859352905:web:a7c28811f63f18d47d0a98"),
   );
   Get.put(AuthController());
+  // Get.put(ShipController());
   runApp(const MyApp());
 }
 

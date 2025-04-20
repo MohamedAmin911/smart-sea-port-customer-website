@@ -166,6 +166,9 @@ class ShipController extends GetxController {
 
       if (_arePositionsEqual(newPos, destinationPosition.value)) {
         timer.cancel();
+        orderController.updateShipmentStatus(
+            shipmentId, ShipmentStatus.delivered);
+
         return;
       }
 

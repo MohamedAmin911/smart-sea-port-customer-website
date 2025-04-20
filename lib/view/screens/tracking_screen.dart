@@ -1,4 +1,4 @@
-// ignore_for_file: invalid_use_of_protected_member, unused_field
+// ignore_for_file: invalid_use_of_protected_member, unused_field, deprecated_member_use, avoid_web_libraries_in_flutter
 
 import 'dart:async';
 
@@ -13,6 +13,8 @@ import 'package:final_project_customer_website/model/shipment_model.dart';
 import 'package:final_project_customer_website/view/screens/make_order_screen.dart';
 import 'package:final_project_customer_website/view/widgets/common_widgets/elev_btn.dart';
 import 'package:final_project_customer_website/view/widgets/tracking_screen_widgets/calendar_widget.dart';
+import 'package:final_project_customer_website/view/widgets/tracking_screen_widgets/checkpoint_widget.dart';
+import 'package:final_project_customer_website/view/widgets/tracking_screen_widgets/costs_widget.dart';
 import 'package:final_project_customer_website/view/widgets/tracking_screen_widgets/map_widget.dart';
 import 'package:final_project_customer_website/view/widgets/tracking_screen_widgets/shipment_details_summary_widget.dart';
 import 'package:flutter/material.dart';
@@ -32,10 +34,8 @@ class _TrackingScreenState extends State<TrackingScreen> {
   final customerController = Get.put(CustomerController());
   final OrderController ordersController = Get.put(OrderController());
   final PayMobController paymentController = Get.put(PayMobController());
-  final ShipController shipController = Get.put(ShipController());
-
+  final ShipController shipController = Get.find<ShipController>();
   late final StreamSubscription<html.Event> _backButtonListener;
-
   @override
   void initState() {
     super.initState();
@@ -239,6 +239,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
                                         children: [
                                           Column(
                                             children: [
+                                              //shipment details summary
                                               ShipmentDetailsSummaryWidget(
                                                   currentShipment:
                                                       ordersController
@@ -267,21 +268,83 @@ class _TrackingScreenState extends State<TrackingScreen> {
                                             ],
                                           ),
                                           SizedBox(width: 30.w),
+                                          //calendar
                                           Column(
                                             children: [
-                                              SizedBox(
-                                                height: 28.h,
+                                              Row(
+                                                children: [
+                                                  Column(
+                                                    children: [
+                                                      SizedBox(
+                                                        height: 28.h,
+                                                      ),
+                                                      CustomCalendar(
+                                                        selectedDate: DateTime(
+                                                            2025,
+                                                            4,
+                                                            24), // for example
+                                                        onDateSelected:
+                                                            (selectedDate) {
+                                                          // Update your state here
+                                                        },
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  SizedBox(width: 30.w),
+                                                  //costs
+                                                  CostsWidget(
+                                                    currentShipment:
+                                                        ordersController
+                                                            .shipmentsList.value
+                                                            .firstWhere(
+                                                      (element) =>
+                                                          element.shipmentStatus.name == ShipmentStatus.inTransit.name ||
+                                                          element.shipmentStatus
+                                                                  .name ==
+                                                              ShipmentStatus
+                                                                  .delivered
+                                                                  .name ||
+                                                          element.shipmentStatus
+                                                                  .name ==
+                                                              ShipmentStatus
+                                                                  .waitingPickup
+                                                                  .name ||
+                                                          element.shipmentStatus
+                                                                  .name ==
+                                                              ShipmentStatus
+                                                                  .unLoading
+                                                                  .name,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
-                                              //calendar
-                                              CustomCalendar(
-                                                selectedDate: DateTime(
-                                                    2025, 4, 24), // for example
-                                                onDateSelected: (selectedDate) {
-                                                  // Update your state here
-                                                },
-                                              ),
+                                              SizedBox(height: 20.h),
+                                              ShipmentCheckpoint(
+                                                  currentStatus:
+                                                      ordersController
+                                                          .shipmentsList.value
+                                                          .firstWhere(
+                                                            (element) =>
+                                                                element.shipmentStatus.name == ShipmentStatus.inTransit.name ||
+                                                                element.shipmentStatus
+                                                                        .name ==
+                                                                    ShipmentStatus
+                                                                        .delivered
+                                                                        .name ||
+                                                                element.shipmentStatus
+                                                                        .name ==
+                                                                    ShipmentStatus
+                                                                        .waitingPickup
+                                                                        .name ||
+                                                                element.shipmentStatus
+                                                                        .name ==
+                                                                    ShipmentStatus
+                                                                        .unLoading
+                                                                        .name,
+                                                          )
+                                                          .shipmentStatus),
                                             ],
-                                          ),
+                                          )
                                         ],
                                       ),
                                     ],

@@ -1,0 +1,102 @@
+import 'package:final_project_customer_website/constants/colors.dart';
+import 'package:final_project_customer_website/constants/text.dart';
+import 'package:flutter/material.dart';
+import 'package:final_project_customer_website/model/shipment_model.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+class ShipmentCheckpoint extends StatelessWidget {
+  final ShipmentStatus currentStatus;
+
+  ShipmentCheckpoint({super.key, required this.currentStatus});
+
+  final Map<ShipmentStatus, String> statusLabels = {
+    ShipmentStatus.inTransit: "In Transit",
+    ShipmentStatus.delivered: "Delivered",
+    ShipmentStatus.unLoading: "Unloading",
+    ShipmentStatus.waitingPickup: "Waiting Pickup",
+  };
+
+  List<ShipmentStatus> get orderedSteps => [
+        ShipmentStatus.inTransit,
+        ShipmentStatus.delivered,
+        ShipmentStatus.unLoading,
+        ShipmentStatus.waitingPickup,
+      ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 860.w,
+      height: 80.h,
+      padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 10.w),
+      decoration: BoxDecoration(
+        color: Kcolor.primary.withValues(alpha: 0.2),
+        borderRadius: BorderRadius.circular(22.r),
+      ),
+      child: Center(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: orderedSteps.map((status) {
+            final isActive = orderedSteps.indexOf(status) <=
+                orderedSteps.indexOf(currentStatus);
+            final isLast = orderedSteps.last == status;
+
+            return Column(
+              children: [
+                Row(
+                  children: [
+                    SizedBox(width: 15.w),
+                    Text(statusLabels[status]!,
+                        style: appStyle(
+                          size: 15.sp,
+                          color: isActive
+                              ? Kcolor.primary
+                              : Kcolor.primary.withValues(alpha: 0.5),
+                          fontWeight:
+                              isActive ? FontWeight.bold : FontWeight.normal,
+                        )),
+                    SizedBox(width: 5.w),
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: isActive ? Kcolor.primary : Kcolor.primary,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        isActive ? Icons.check_rounded : Icons.circle,
+                        size: 20.sp,
+                        color: Kcolor.background,
+                        weight: 1,
+                      ),
+                    ),
+                    if (!isLast)
+                      Row(
+                        children: [
+                          Container(
+                            width: 70,
+                            height: 4,
+                            margin: EdgeInsets.symmetric(horizontal: 5.w),
+                            decoration: BoxDecoration(
+                              color: isActive
+                                  ? Kcolor.primary
+                                  : Kcolor.primary.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(22.r),
+                            ),
+                          ),
+                          Icon(Icons.arrow_forward_ios_rounded,
+                              size: 30.sp,
+                              color: isActive
+                                  ? Kcolor.primary
+                                  : Kcolor.primary.withValues(alpha: 0.2)),
+                        ],
+                      ),
+                  ],
+                ),
+              ],
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+}
