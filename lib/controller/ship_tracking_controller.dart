@@ -27,7 +27,10 @@ class ShipController extends GetxController {
     await initializePositions(
       orderController.shipmentsList
           .firstWhere((element) =>
-              element.shipmentStatus.name == ShipmentStatus.inTransit.name)
+              element.shipmentStatus.name == ShipmentStatus.inTransit.name ||
+              element.shipmentStatus.name == ShipmentStatus.delivered.name ||
+              element.shipmentStatus.name == ShipmentStatus.unLoading.name ||
+              element.shipmentStatus.name == ShipmentStatus.waitingPickup.name)
           .senderAddress,
     );
   }
@@ -191,7 +194,11 @@ class ShipController extends GetxController {
       return orderController.shipmentsList
           .firstWhere(
             (shipment) =>
-                shipment.shipmentStatus.name == ShipmentStatus.inTransit.name,
+                shipment.shipmentStatus.name == ShipmentStatus.inTransit.name ||
+                shipment.shipmentStatus.name == ShipmentStatus.delivered.name ||
+                shipment.shipmentStatus.name == ShipmentStatus.unLoading.name ||
+                shipment.shipmentStatus.name ==
+                    ShipmentStatus.waitingPickup.name,
           )
           .shipmentId;
     } catch (_) {

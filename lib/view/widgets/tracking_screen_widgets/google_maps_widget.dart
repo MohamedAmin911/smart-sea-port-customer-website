@@ -10,6 +10,8 @@ import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class ShipMapWidget extends StatefulWidget {
+  const ShipMapWidget({super.key});
+
   @override
   State<ShipMapWidget> createState() => _ShipMapWidgetState();
 }
