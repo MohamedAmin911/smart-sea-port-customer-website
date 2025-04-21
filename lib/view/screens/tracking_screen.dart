@@ -279,15 +279,29 @@ class _TrackingScreenState extends State<TrackingScreen> {
                                                         height: 28.h,
                                                       ),
                                                       CustomCalendar(
-                                                        selectedDate: DateTime(
-                                                            2025,
-                                                            4,
-                                                            24), // for example
-                                                        onDateSelected:
-                                                            (selectedDate) {
-                                                          // Update your state here
-                                                        },
-                                                      ),
+                                                          currentShipment:
+                                                              ordersController
+                                                                  .shipmentsList
+                                                                  .value
+                                                                  .firstWhere(
+                                                        (element) =>
+                                                            element.shipmentStatus.name == ShipmentStatus.inTransit.name ||
+                                                            element.shipmentStatus
+                                                                    .name ==
+                                                                ShipmentStatus
+                                                                    .delivered
+                                                                    .name ||
+                                                            element.shipmentStatus
+                                                                    .name ==
+                                                                ShipmentStatus
+                                                                    .waitingPickup
+                                                                    .name ||
+                                                            element.shipmentStatus
+                                                                    .name ==
+                                                                ShipmentStatus
+                                                                    .unLoading
+                                                                    .name,
+                                                      )),
                                                     ],
                                                   ),
                                                   SizedBox(width: 30.w),
@@ -319,6 +333,8 @@ class _TrackingScreenState extends State<TrackingScreen> {
                                                 ],
                                               ),
                                               SizedBox(height: 20.h),
+
+                                              //checkpoints
                                               ShipmentCheckpoint(
                                                   currentStatus:
                                                       ordersController

@@ -37,13 +37,14 @@ class ShipController extends GetxController {
 
   Future<LatLng> _getCoordinates(String place) async {
     final url = Uri.parse(
-        'https://maps.gomaps.pro/maps/api/geocode/json?address=$place&key=${KapiKeys.googleMapsApiKey}');
+        'https://geocode.maps.co/search?q=$place&api_key=${KapiKeys.geocodingApiKey}');
     final response = await http.get(url);
     final data = json.decode(response.body);
 
-    if (data['status'] == 'OK') {
-      final location = data['results'][0]['geometry']['location'];
-      return LatLng(location['lat'], location['lng']);
+    if (response.statusCode == 200) {
+      final location = data[0];
+      return LatLng(
+          double.parse(location['lat']), double.parse(location['lon']));
     } else {
       throw Exception('Failed to get coordinates for $place');
     }

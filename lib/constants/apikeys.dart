@@ -19,6 +19,7 @@ class KapiKeys {
       "sk_test_51REqaJED4hIlcoyn7Tc77t9IfcIfXphsc7vNgvg3ifzHGQ2XI9tRbD7viMuGtvhT5fn9thgfvJQyS95dJOk7f8qh000Fwep7AC";
 
   static const googleMapsApiKey = "AlzaSymNevMyzEiYgdv7kS8nHd17caEIYzC32-E";
+  static const geocodingApiKey = "6805a5586c93f125757845xcf290033";
 }
 
 

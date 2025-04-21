@@ -1,17 +1,20 @@
 import 'package:final_project_customer_website/constants/colors.dart';
 import 'package:final_project_customer_website/constants/text.dart';
+import 'package:final_project_customer_website/model/shipment_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CustomCalendar extends StatefulWidget {
-  final DateTime selectedDate;
-  final ValueChanged<DateTime> onDateSelected;
-
+  // final DateTime selectedDate;
+  // final ValueChanged<DateTime> onDateSelected;
+  final ShipmentModel currentShipment;
   const CustomCalendar({
     super.key,
-    required this.selectedDate,
-    required this.onDateSelected,
+    // required this.selectedDate,
+    // required this.onDateSelected,
+    required this.currentShipment,
   });
 
   @override
@@ -20,17 +23,20 @@ class CustomCalendar extends StatefulWidget {
 
 class _CustomCalendarState extends State<CustomCalendar> {
   late DateTime _focusedDay;
-  late DateTime? _selectedDay;
-
+//   late DateTime? _selectedDay;
+// DateTime dateTime = DateFormat("d-M-yyyy").parse(currentShipment.estimatedDeliveryDate);
   @override
   void initState() {
     super.initState();
-    _selectedDay = widget.selectedDate;
+    // _selectedDay = dateTime;
     _focusedDay = DateTime.now();
   }
 
   @override
   Widget build(BuildContext context) {
+    DateFormat format = DateFormat("yyyy-M-d");
+    DateTime dateTime =
+        format.parse(widget.currentShipment.estimatedDeliveryDate);
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
       width: 400.w,
@@ -51,7 +57,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
                   borderRadius: BorderRadius.circular(22.r),
                 ),
                 child: Text(
-                  "Estimated arrival: July 19, 2024",
+                  "Estimated arrival: ${widget.currentShipment.estimatedDeliveryDate}",
                   textAlign: TextAlign.start,
                   style: appStyle(
                       size: 13.sp,
@@ -69,7 +75,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
                   borderRadius: BorderRadius.circular(22.r),
                 ),
                 child: Text(
-                  "7 days left",
+                  "${dateTime.day - DateTime.now().day} days left",
                   textAlign: TextAlign.start,
                   style: appStyle(
                       size: 13.sp,
@@ -160,8 +166,9 @@ class _CustomCalendarState extends State<CustomCalendar> {
             firstDay: DateTime.utc(2020, 1, 1),
             lastDay: DateTime.utc(2030, 12, 31),
             focusedDay: _focusedDay,
-            selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+            selectedDayPredicate: (day) => isSameDay(dateTime, day),
             onDaySelected: (selectedDay, focusedDay) {
+              print(dateTime.day);
               // setState(() {
               //   _selectedDay = selectedDay;
               //   _focusedDay = focusedDay;
