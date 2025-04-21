@@ -83,7 +83,7 @@ class _ShipMapWidgetState extends State<ShipMapWidget> {
           ),
         },
         polylines: {
-          if (controller.routePoints.isNotEmpty)
+          if (controller.routePoints2.isNotEmpty)
             Polyline(
               polylineId: const PolylineId('route'),
               color: Kcolor.accent,
