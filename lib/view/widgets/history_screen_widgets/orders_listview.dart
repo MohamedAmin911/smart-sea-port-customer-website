@@ -28,11 +28,8 @@ class OrdersListView extends StatelessWidget {
                       ShipmentStatus.cancelled.name
                   ? "Cancelled"
                   : ordersController.shipmentsList.value[index].shippingCost
-                                  .toString() ==
-                              "0" ||
-                          ordersController.shipmentsList.value[index]
-                                  .shipmentStatus.name ==
-                              ShipmentStatus.waitngPayment.name
+                              .toString() ==
+                          "0"
                       ? "Being estimated"
                       : ordersController.shipmentsList.value[index].shippingCost
                           .toString(),
