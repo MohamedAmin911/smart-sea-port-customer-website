@@ -31,7 +31,8 @@ class _MapScreenState extends State<MapScreen> {
           (element) =>
               element.shipmentStatus.name == ShipmentStatus.inTransit.name ||
               element.shipmentStatus.name == ShipmentStatus.delivered.name ||
-              element.shipmentStatus.name == ShipmentStatus.unLoading.name ||
+              element.shipmentStatus.name == ShipmentStatus.unLoaded.name ||
+              element.shipmentStatus.name == ShipmentStatus.enteredPort.name ||
               element.shipmentStatus.name == ShipmentStatus.waitingPickup.name,
           orElse: () => throw Exception('No valid shipment found'),
         );

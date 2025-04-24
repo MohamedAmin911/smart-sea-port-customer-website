@@ -5,9 +5,10 @@ enum ShipmentStatus {
   cancelled,
   waitngPayment,
   inTransit,
-  unLoading,
-  waitingPickup,
   delivered,
+  enteredPort,
+  unLoaded,
+  waitingPickup,
 }
 
 class ShipmentModel {

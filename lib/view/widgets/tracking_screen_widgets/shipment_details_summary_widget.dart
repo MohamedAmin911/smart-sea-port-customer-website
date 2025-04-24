@@ -130,7 +130,7 @@ class ShipmentDetailsSummaryWidget extends StatelessWidget {
                 ),
                 child: Center(
                   child: Text(
-                    currentShipment.receiverAddress,
+                    "Egypt",
                     style: appStyle(
                         size: 15.sp,
                         color: Kcolor.background,

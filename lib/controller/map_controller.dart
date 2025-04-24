@@ -50,6 +50,7 @@ class ShipController extends GetxController {
   void onInit() async {
     super.onInit();
     await _loadCustomIcons();
+    await orderController.fetchPortEntryStatus(currentShipmentId!);
   }
 
   @override
@@ -226,7 +227,7 @@ class ShipController extends GetxController {
   }
 
   // Simulate ship movement
-  void startShipMovement() {
+  void startShipMovement() async {
     if (!iconsLoaded.value) {
       getxSnackbar(
           title: 'Warning', msg: 'Waiting for custom icons to load...');
@@ -242,10 +243,18 @@ class ShipController extends GetxController {
       if (progress.value >= 1.0) {
         progress.value = 1.0;
         if (currentShipmentId != null) {
-          orderController.updateShipmentStatus(
-            currentShipmentId!,
-            ShipmentStatus.delivered,
-          );
+          if (orderController.shipmentsList
+                  .firstWhere(
+                    (shipment) => shipment.shipmentId == currentShipmentId,
+                  )
+                  .shipmentStatus
+                  .name ==
+              ShipmentStatus.inTransit.name) {
+            orderController.updateShipmentStatus(
+              currentShipmentId!,
+              ShipmentStatus.delivered,
+            );
+          }
         }
         timer.cancel();
       }

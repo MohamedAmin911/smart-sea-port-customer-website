@@ -1,3 +1,5 @@
+// ignore_for_file: invalid_use_of_protected_member
+
 import 'dart:convert';
 
 import 'package:final_project_customer_website/controller/customer_controller.dart';
@@ -13,15 +15,19 @@ class OrderController extends GetxController {
   var isLoading = false.obs;
   final DatabaseReference _shipmentRef =
       FirebaseDatabase.instance.ref().child('shipments');
+  final DatabaseReference _blockChainRef =
+      FirebaseDatabase.instance.ref().child('BlockchainTriggers');
 
   Rx<ShipmentModel?> currentShipment = Rx<ShipmentModel?>(null);
   RxList<ShipmentModel> shipmentsList = <ShipmentModel>[].obs;
+  RxMap<String, Map<String, String>> blockChainData =
+      <String, Map<String, String>>{}.obs;
   final CustomerController customerController = Get.put(CustomerController());
 
   @override
   void onInit() async {
     super.onInit();
-    fetchUserShipments(_auth.currentUser!.uid);
+    await fetchUserShipments(_auth.currentUser!.uid);
   }
 
   // Add a new shipment with Firebase-generated ID
@@ -231,5 +237,38 @@ class OrderController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  Future<void> fetchPortEntryStatus(String shipmentId) async {
+    _blockChainRef.orderByChild('ID').equalTo(shipmentId).onValue.listen(
+        (event) {
+      final convertedData = <String, Map<String, String>>{};
+      if (event.snapshot.exists && event.snapshot.value != null) {
+        final data = event.snapshot.value as Map<dynamic, dynamic>;
+        data.forEach((key, value) {
+          final nestedMap = (value as Map<dynamic, dynamic>).map(
+            (k, v) => MapEntry(k.toString(), v.toString()),
+          );
+          convertedData[key.toString()] = nestedMap;
+        });
+        blockChainData.value = convertedData;
+
+        if (blockChainData.value.containsKey('test456') &&
+            blockChainData.value['test456']!['PortEntryTrigger'] == '1') {
+          updateShipmentStatus(shipmentId, ShipmentStatus.enteredPort);
+        }
+
+        if (blockChainData.value.containsKey('test456') &&
+            blockChainData.value['test456']!['ContainerStoredTrigger'] == '1') {
+          updateShipmentStatus(shipmentId, ShipmentStatus.unLoaded);
+        }
+      } else {
+        blockChainData.clear();
+      }
+    }, onError: (error) {
+      print('Error fetching port entry status: $error');
+      getxSnackbar(
+          title: 'Error', msg: 'Failed to fetch port entry status: $error');
+    });
   }
 }

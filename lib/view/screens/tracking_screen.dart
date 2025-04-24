@@ -81,9 +81,10 @@ class _TrackingScreenState extends State<TrackingScreen> {
       ShipmentStatus.inTransit.name,
       ShipmentStatus.delivered.name,
       ShipmentStatus.waitingPickup.name,
-      ShipmentStatus.unLoading.name,
+      ShipmentStatus.unLoaded.name,
       ShipmentStatus.waitngPayment.name,
       ShipmentStatus.onHold.name,
+      ShipmentStatus.enteredPort.name,
       "waitingApproval", // Assuming this is not a defined enum
     ];
 
@@ -125,7 +126,8 @@ class _TrackingScreenState extends State<TrackingScreen> {
         case "inTransit":
         case "delivered":
         case "waitingPickup":
-        case "unLoading":
+        case "unLoaded":
+        case "enteredPort":
           return _buildTrackingDetails(currentShipment!);
 
         default:

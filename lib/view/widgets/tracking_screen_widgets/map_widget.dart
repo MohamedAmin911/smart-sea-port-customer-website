@@ -29,7 +29,7 @@ class _MapWidgetState extends State<MapWidget> {
   Widget build(BuildContext context) {
     return Container(
       width: 600.w,
-      height: 300.h,
+      height: 320.h,
       decoration: BoxDecoration(
         border: Border.all(
             color: Kcolor.primary.withValues(alpha: 0.2), width: 4.w),
@@ -37,7 +37,7 @@ class _MapWidgetState extends State<MapWidget> {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(18.r),
-        child: MapScreen(),
+        child: const MapScreen(),
 
         // const ShipMap(),
 

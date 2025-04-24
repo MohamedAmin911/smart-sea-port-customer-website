@@ -12,14 +12,16 @@ class ShipmentCheckpoint extends StatelessWidget {
   final Map<ShipmentStatus, String> statusLabels = {
     ShipmentStatus.inTransit: "In Transit",
     ShipmentStatus.delivered: "Delivered",
-    ShipmentStatus.unLoading: "Unloading",
+    ShipmentStatus.enteredPort: "Entered Port",
+    ShipmentStatus.unLoaded: "Unloaded",
     ShipmentStatus.waitingPickup: "Waiting Pickup",
   };
 
   List<ShipmentStatus> get orderedSteps => [
         ShipmentStatus.inTransit,
         ShipmentStatus.delivered,
-        ShipmentStatus.unLoading,
+        ShipmentStatus.enteredPort,
+        ShipmentStatus.unLoaded,
         ShipmentStatus.waitingPickup,
       ];
 
@@ -27,14 +29,17 @@ class ShipmentCheckpoint extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 860.w,
-      height: 80.h,
-      padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 10.w),
+      height: 100.h,
+      padding: EdgeInsets.symmetric(
+        vertical: 20.h,
+      ),
       decoration: BoxDecoration(
         color: Kcolor.primary.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(22.r),
       ),
       child: Center(
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: orderedSteps.map((status) {
             final isActive = orderedSteps.indexOf(status) <=
@@ -45,49 +50,77 @@ class ShipmentCheckpoint extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    SizedBox(width: 15.w),
-                    Text(statusLabels[status]!,
-                        style: appStyle(
-                          size: 15.sp,
-                          color: isActive
-                              ? Kcolor.primary
-                              : Kcolor.primary.withValues(alpha: 0.5),
-                          fontWeight:
-                              isActive ? FontWeight.bold : FontWeight.normal,
-                        )),
-                    SizedBox(width: 5.w),
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: isActive ? Kcolor.primary : Kcolor.primary,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        isActive ? Icons.check_rounded : Icons.circle,
-                        size: 20.sp,
-                        color: Kcolor.background,
-                        weight: 1,
-                      ),
+                    SizedBox(width: 8.w),
+                    Column(
+                      children: [
+                        Text(statusLabels[status]!,
+                            style: appStyle(
+                              size: 15.sp,
+                              color: isActive
+                                  ? Kcolor.primary
+                                  : Kcolor.primary.withValues(alpha: 0.5),
+                              fontWeight: isActive
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                            )),
+                        SizedBox(height: 10.h),
+                        //checkpoint icon
+                        Container(
+                          padding: const EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                            color: isActive ? Kcolor.primary : Kcolor.primary,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            isActive ? Icons.check_rounded : Icons.circle,
+                            size: 25.sp,
+                            color: Kcolor.background,
+                            weight: 1,
+                          ),
+                        ),
+                      ],
                     ),
                     if (!isLast)
-                      Row(
+                      Column(
                         children: [
-                          Container(
-                            width: 70,
-                            height: 4,
-                            margin: EdgeInsets.symmetric(horizontal: 5.w),
-                            decoration: BoxDecoration(
-                              color: isActive
-                                  ? Kcolor.primary
-                                  : Kcolor.primary.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(22.r),
-                            ),
+                          SizedBox(height: 20.h),
+                          Row(
+                            children: [
+                              Container(
+                                width: 30,
+                                height: 4,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: isActive
+                                      ? Kcolor.primary
+                                      : Kcolor.primary.withValues(alpha: 0.2),
+                                  // borderRadius: BorderRadius.circular(22.r),
+                                ),
+                              ),
+                              Container(
+                                width: 30,
+                                height: 4,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: isActive
+                                      ? Kcolor.primary
+                                      : Kcolor.primary.withValues(alpha: 0.2),
+                                  // borderRadius: BorderRadius.circular(22.r),
+                                ),
+                              ),
+                              Container(
+                                width: 30,
+                                height: 4,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: isActive
+                                      ? Kcolor.primary
+                                      : Kcolor.primary.withValues(alpha: 0.2),
+                                  // borderRadius: BorderRadius.circular(22.r),
+                                ),
+                              ),
+                            ],
                           ),
-                          Icon(Icons.arrow_forward_ios_rounded,
-                              size: 30.sp,
-                              color: isActive
-                                  ? Kcolor.primary
-                                  : Kcolor.primary.withValues(alpha: 0.2)),
                         ],
                       ),
                   ],

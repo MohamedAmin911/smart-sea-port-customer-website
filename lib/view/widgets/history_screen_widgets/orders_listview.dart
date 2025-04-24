@@ -54,20 +54,28 @@ class OrdersListView extends StatelessWidget {
                               ? "Delivered"
                               : ordersController.shipmentsList.value[index]
                                           .shipmentStatus.name ==
-                                      ShipmentStatus.unLoading.name
-                                  ? "Unloading"
+                                      ShipmentStatus.unLoaded.name
+                                  ? "Unloaded"
                                   : ordersController.shipmentsList.value[index]
                                               .shipmentStatus.name ==
-                                          ShipmentStatus.waitingPickup.name
-                                      ? "Waiting Pickup"
+                                          ShipmentStatus.enteredPort.name
+                                      ? "Entered Port"
                                       : ordersController
                                                   .shipmentsList
                                                   .value[index]
                                                   .shipmentStatus
                                                   .name ==
-                                              ShipmentStatus.waitngPayment.name
-                                          ? "Waiting Payment"
-                                          : "In Transit",
+                                              ShipmentStatus.waitingPickup.name
+                                          ? "Waiting Pickup"
+                                          : ordersController
+                                                      .shipmentsList
+                                                      .value[index]
+                                                      .shipmentStatus
+                                                      .name ==
+                                                  ShipmentStatus
+                                                      .waitngPayment.name
+                                              ? "Waiting Payment"
+                                              : "In Transit",
               to: ordersController.shipmentsList[index].receiverAddress,
             ),
           );

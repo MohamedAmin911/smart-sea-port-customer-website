@@ -80,7 +80,9 @@ class _CustomCalendarState extends State<CustomCalendar> {
                           widget.currentShipment.shipmentStatus.name ==
                               ShipmentStatus.waitingPickup.name ||
                           widget.currentShipment.shipmentStatus.name ==
-                              ShipmentStatus.unLoading.name
+                              ShipmentStatus.unLoaded.name ||
+                          widget.currentShipment.shipmentStatus.name ==
+                              ShipmentStatus.enteredPort.name
                       ? "0 days left"
                       : "${dateTime.day - DateTime.now().day} days left",
                   textAlign: TextAlign.start,

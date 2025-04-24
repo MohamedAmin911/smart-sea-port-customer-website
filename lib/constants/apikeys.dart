@@ -15,6 +15,9 @@ class KapiKeys {
   static const googleMapsApiKey = "AlzaSyVXxZFmimsTyhVTMMZ6Zx41eU4cXGS4XTT";
   static const geocodingApiKey = "6805a5586c93f125757845xcf290033";
   static const positionstackApiKey = "88c03457a34c8a7600eb10c2ded90674";
+
+  static const String blockChainUrl =
+      'https://6eea0204e9700433e95130a6d7956795.serveo.net/containers';
 }
 
 
