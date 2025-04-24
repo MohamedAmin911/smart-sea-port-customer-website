@@ -7,19 +7,14 @@ class KapiKeys {
       "egy_pk_test_kOyyO5DC3QGPrZlPeo1UeSLZZN28pCkP";
   static const int payMobIntegrationId = 5057043;
 
-  static const String fawaterakApiUrl =
-      'https://staging.fawaterk.com/api/v2/getPaymentmethods';
-  static const String fawaterakAccessToken =
-      'c050ae2372f00a39f29f85c81393f5228ea35fa064991598a5';
-  static const API_URL = 'https://staging.fawaterk.com/api/v2/invoiceInitPay';
-
   static const stripePublishableKey =
       "pk_test_51REqaJED4hIlcoynQAOZCmFyMiBsGBw0I3gTToeMM7SjU52PqicZvtRZhOabyg7giBBHMIarScI4LuXTN3Wvu6A5005Sh9pOdg";
   static const stripeSecretKey =
       "sk_test_51REqaJED4hIlcoyn7Tc77t9IfcIfXphsc7vNgvg3ifzHGQ2XI9tRbD7viMuGtvhT5fn9thgfvJQyS95dJOk7f8qh000Fwep7AC";
 
-  static const googleMapsApiKey = "AlzaSyinI2DVA8DZ0BgdCcsiDuz8hgV5rAySJpZ";
+  static const googleMapsApiKey = "AlzaSyVXxZFmimsTyhVTMMZ6Zx41eU4cXGS4XTT";
   static const geocodingApiKey = "6805a5586c93f125757845xcf290033";
+  static const positionstackApiKey = "88c03457a34c8a7600eb10c2ded90674";
 }
 
 

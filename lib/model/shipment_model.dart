@@ -28,7 +28,7 @@ class ShipmentModel {
   final String orderId;
   final bool isPaid;
   final String estimatedDeliveryDate;
-
+  final String enteredPort;
   ShipmentModel({
     required this.submitedDate,
     this.shipmentId = "",
@@ -44,6 +44,7 @@ class ShipmentModel {
     this.shippingCost = 0,
     this.isPaid = false,
     this.orderId = "",
+    this.enteredPort = "",
   });
 
   // Convert a Map object into a ShipmentModel object
@@ -66,6 +67,7 @@ class ShipmentModel {
       orderId: json['orderId'] as String? ?? "",
       isPaid: json['isPaid'] as bool? ?? false,
       estimatedDeliveryDate: json['estimatedDeliveryDate'] as String? ?? "",
+      enteredPort: json['enteredPort'] as String? ?? "",
     );
   }
   static Map<String, dynamic> _convertShipmentSize(dynamic sizeData) {
@@ -92,6 +94,7 @@ class ShipmentModel {
       'orderId': orderId,
       'isPaid': isPaid,
       'estimatedDeliveryDate': estimatedDeliveryDate,
+      'enteredPort': enteredPort,
     };
   }
 }

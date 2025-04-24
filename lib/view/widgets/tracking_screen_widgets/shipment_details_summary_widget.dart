@@ -49,7 +49,7 @@ class ShipmentDetailsSummaryWidget extends StatelessWidget {
               const Spacer(),
               //order status
               Container(
-                width: 100.w,
+                width: 200.w,
                 padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 10.h),
                 decoration: BoxDecoration(
                   border: Border.all(
@@ -89,7 +89,7 @@ class ShipmentDetailsSummaryWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                width: 150.w,
+                width: 200.w,
                 padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
                 decoration: BoxDecoration(
                   color: Kcolor.primary,
@@ -118,36 +118,11 @@ class ShipmentDetailsSummaryWidget extends StatelessWidget {
                     color: Kcolor.primary,
                     size: 30.sp,
                   ),
-                  Icon(
-                    Icons.arrow_circle_right_rounded,
-                    color: Kcolor.primary,
-                    size: 30.sp,
-                  ),
-                  Icon(
-                    Icons.arrow_circle_right_rounded,
-                    color: Kcolor.primary,
-                    size: 30.sp,
-                  ),
-                  Icon(
-                    Icons.arrow_circle_right_rounded,
-                    color: Kcolor.primary,
-                    size: 30.sp,
-                  ),
-                  Icon(
-                    Icons.arrow_circle_right_rounded,
-                    color: Kcolor.primary,
-                    size: 30.sp,
-                  ),
-                  Icon(
-                    Icons.arrow_circle_right_rounded,
-                    color: Kcolor.primary,
-                    size: 30.sp,
-                  ),
                 ],
               ),
               SizedBox(width: 20.w),
               Container(
-                width: 150.w,
+                width: 200.w,
                 padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
                 decoration: BoxDecoration(
                   color: Kcolor.primary,

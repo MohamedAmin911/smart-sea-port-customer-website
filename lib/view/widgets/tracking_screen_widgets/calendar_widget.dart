@@ -75,7 +75,14 @@ class _CustomCalendarState extends State<CustomCalendar> {
                   borderRadius: BorderRadius.circular(22.r),
                 ),
                 child: Text(
-                  "${dateTime.day - DateTime.now().day} days left",
+                  widget.currentShipment.shipmentStatus.name ==
+                              ShipmentStatus.delivered.name ||
+                          widget.currentShipment.shipmentStatus.name ==
+                              ShipmentStatus.waitingPickup.name ||
+                          widget.currentShipment.shipmentStatus.name ==
+                              ShipmentStatus.unLoading.name
+                      ? "0 days left"
+                      : "${dateTime.day - DateTime.now().day} days left",
                   textAlign: TextAlign.start,
                   style: appStyle(
                       size: 13.sp,

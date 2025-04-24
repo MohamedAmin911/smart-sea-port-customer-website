@@ -100,7 +100,7 @@ class CostsWidget extends StatelessWidget {
                                 ),
                                 SizedBox(height: 10.h),
                                 Text(
-                                  "$customsFees EGP",
+                                  "${customsFees.ceil()} EGP",
                                   textAlign: TextAlign.start,
                                   style: appStyle(
                                       size: 20.sp,
@@ -146,7 +146,7 @@ class CostsWidget extends StatelessWidget {
                                 ),
                                 SizedBox(height: 10.h),
                                 Text(
-                                  "$shippingCharges EGP",
+                                  "${shippingCharges.ceil()} EGP",
                                   textAlign: TextAlign.start,
                                   style: appStyle(
                                       size: 20.sp,

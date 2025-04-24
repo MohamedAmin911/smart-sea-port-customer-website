@@ -6,7 +6,6 @@ import 'package:final_project_customer_website/constants/icon_assets.dart';
 import 'package:final_project_customer_website/constants/text.dart';
 import 'package:final_project_customer_website/controller/customer_controller.dart';
 import 'package:final_project_customer_website/controller/order_controller.dart';
-import 'package:final_project_customer_website/controller/ship_tracking_controller.dart';
 import 'package:final_project_customer_website/model/shipment_model.dart';
 import 'package:final_project_customer_website/view/widgets/common_widgets/elev_btn.dart';
 import 'package:final_project_customer_website/view/widgets/common_widgets/styled_form_field.dart';
@@ -37,7 +36,6 @@ class _MakeOrderScreenState extends State<MakeOrderScreen> {
 
   final orderController = Get.put(OrderController());
   final customerController = Get.put(CustomerController());
-  final shipController = Get.put(ShipController());
 
   String sourceCountry = "";
 

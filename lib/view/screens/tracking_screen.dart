@@ -9,7 +9,6 @@ import 'package:final_project_customer_website/constants/text.dart';
 import 'package:final_project_customer_website/controller/customer_controller.dart';
 import 'package:final_project_customer_website/controller/order_controller.dart';
 import 'package:final_project_customer_website/controller/paymob_controller.dart';
-import 'package:final_project_customer_website/controller/ship_tracking_controller.dart';
 import 'package:final_project_customer_website/model/shipment_model.dart';
 import 'package:final_project_customer_website/view/screens/make_order_screen.dart';
 import 'package:final_project_customer_website/view/widgets/common_widgets/elev_btn.dart';
@@ -35,12 +34,16 @@ class _TrackingScreenState extends State<TrackingScreen> {
   final customerController = Get.put(CustomerController());
   final OrderController ordersController = Get.put(OrderController());
   final PayMobController paymentController = Get.put(PayMobController());
-  final ShipController shipController = Get.find<ShipController>();
   late final StreamSubscription<html.Event> _backButtonListener;
-
+  bool isLoading = true;
   @override
   void initState() {
     super.initState();
+    Timer.periodic(const Duration(seconds: 1), (timer) async {
+      setState(() {
+        isLoading = false;
+      });
+    });
     _setupBackButtonListener();
   }
 
@@ -103,7 +106,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
         (s) => s.shipmentStatus.name == currentStatus?.name,
       );
 
-      // if (paymentController.isLoading.value) {
+      // if (isLoading) {
       //   return const Center(
       //       child: CircularProgressIndicator(color: Kcolor.primary));
       // }

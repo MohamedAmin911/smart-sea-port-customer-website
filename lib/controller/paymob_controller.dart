@@ -2,7 +2,6 @@ import 'package:dio/dio.dart' as dioo;
 import 'package:final_project_customer_website/constants/apikeys.dart';
 import 'package:final_project_customer_website/controller/customer_controller.dart';
 import 'package:final_project_customer_website/controller/order_controller.dart';
-import 'package:final_project_customer_website/controller/ship_tracking_controller.dart';
 import 'package:final_project_customer_website/model/shipment_model.dart';
 import 'package:final_project_customer_website/view/screens/iframes_screen.dart';
 import 'package:final_project_customer_website/view/screens/tracking_screen.dart';
@@ -20,7 +19,6 @@ class PayMobController extends GetxController {
 
   final CustomerController customerController = Get.put(CustomerController());
   final OrderController orderController = Get.put(OrderController());
-  final ShipController shipController = Get.put(ShipController());
 
   final dio = dioo.Dio();
   RxBool isPaid = false.obs;
@@ -240,10 +238,15 @@ class PayMobController extends GetxController {
         await orderController
             .fetchUserShipments(customerController.currentCustomer.value.uid);
 
-        await shipController.initializePositions(orderController.shipmentsList
+        // await shipController.initializePositions(orderController.shipmentsList
+        //     .firstWhere((shipment) =>
+        //         shipment.shipmentStatus.name == ShipmentStatus.inTransit.name)
+        //     .senderAddress);
+
+        orderController.postContainerId(orderController.shipmentsList
             .firstWhere((shipment) =>
                 shipment.shipmentStatus.name == ShipmentStatus.inTransit.name)
-            .senderAddress);
+            .shipmentId);
 
         isLoading.value = false;
       } else {

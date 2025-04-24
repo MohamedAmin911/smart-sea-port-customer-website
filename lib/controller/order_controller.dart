@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:final_project_customer_website/controller/customer_controller.dart';
 import 'package:final_project_customer_website/model/shipment_model.dart';
 import 'package:final_project_customer_website/view/widgets/common_widgets/getx_snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 
 class OrderController extends GetxController {
   final _auth = FirebaseAuth.instance;
@@ -196,6 +199,37 @@ class OrderController extends GetxController {
           .update({'shipmentStatus': shipmentStatus.name});
     } catch (e) {
       throw Exception("Failed to update shipment status: $e");
+    }
+  }
+
+  Future<void> postContainerId(String containerId) async {
+    final url = Uri.parse(
+        'https://6eea0204e9700433e95130a6d7956795.serveo.net/containers');
+    final headers = {
+      'Content-Type': 'application/json',
+      'ngrok-skip-browser-warning': 'skip-browser-warning',
+    };
+
+    final body = jsonEncode({'containerId': containerId}); // ✅ proper JSON body
+
+    isLoading.value = true;
+    // postSuccess.value = false;
+    // errorMessage.value = '';
+
+    try {
+      final response = await http.post(url, headers: headers, body: body);
+
+      print('Response: ${response.statusCode} - ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // postSuccess.value = true;
+      } else {
+        // errorMessage.value = 'Error: ${response.statusCode} - ${response.body}';
+      }
+    } catch (e) {
+      // errorMessage.value = 'Exception: $e';
+    } finally {
+      isLoading.value = false;
     }
   }
 }
