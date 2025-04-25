@@ -54,7 +54,10 @@ class OrderController extends GetxController {
         await _shipmentRef.child(shipment.shipmentId).set(shipment.toJson());
         await customerController.updateCustomerData(
           customerController.currentCustomer.value.uid,
-          {'orders': customerController.currentCustomer.value.orders},
+          {
+            'orders': customerController.currentCustomer.value.orders,
+            'currentOrderId': shipment.shipmentId,
+          },
           1,
         );
         shipmentsList.add(shipment);
