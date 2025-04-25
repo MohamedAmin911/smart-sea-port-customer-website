@@ -201,4 +201,14 @@ class CustomerController extends GetxController {
       }
     }
   }
+
+  Future<void> addCurrentOrderIdToCustomer(String orderId) async {
+    try {
+      await customerssRef
+          .child(currentCustomer.value.uid)
+          .update({'currentOrderId': orderId});
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

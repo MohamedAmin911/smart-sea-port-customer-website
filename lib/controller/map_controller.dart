@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:async';
 import 'package:final_project_customer_website/constants/apikeys.dart';
 import 'package:final_project_customer_website/constants/colors.dart';
@@ -50,7 +52,6 @@ class ShipController extends GetxController {
   void onInit() async {
     super.onInit();
     await _loadCustomIcons();
-    await orderController.fetchPortEntryStatus(currentShipmentId!);
   }
 
   @override

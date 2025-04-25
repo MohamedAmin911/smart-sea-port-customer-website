@@ -53,8 +53,16 @@ class PayMobController extends GetxController {
               if (verified) {
                 isPaid.value = true;
                 // Update the shipment status
-                await orderController.updateShipmentPaymentStatus(
-                    shipment.shipmentId, true);
+                do {
+                  await orderController.updateShipmentPaymentStatus(
+                      shipment.shipmentId, true);
+                } while (orderController.shipmentsList
+                        .firstWhere((shipment) =>
+                            shipment.shipmentStatus.name ==
+                            ShipmentStatus.waitngPayment.name)
+                        .shipmentStatus
+                        .name !=
+                    ShipmentStatus.inTransit.name);
                 Get.offAll(() => TrackingScreen()); // Force navigation back
               }
             }

@@ -250,7 +250,14 @@ class _TrackingScreenState extends State<TrackingScreen> {
                       ],
                     ),
                     SizedBox(height: 20.h),
-                    ShipmentCheckpoint(currentStatus: shipment.shipmentStatus),
+                    ShipmentCheckpoint(
+                        currentStatus: shipment.portEntryTrigger == "1" &&
+                                shipment.containerStoredTrigger == "0"
+                            ? ShipmentStatus.enteredPort
+                            : shipment.portEntryTrigger == "1" &&
+                                    shipment.containerStoredTrigger == "1"
+                                ? ShipmentStatus.unLoaded
+                                : shipment.shipmentStatus),
                   ],
                 )
               ],

@@ -31,9 +31,9 @@ dependencies:
   cloud_firestore: null
   cupertino_icons: ^1.0.8
   dio: ^5.8.0+1
-  firebase_auth: null
-  firebase_core: null
-  firebase_database: null
+  firebase_auth: ^5.5.2
+  firebase_core: 
+  firebase_database:
   flutter:
     sdk: flutter
   flutter_paymob: ^1.0.5

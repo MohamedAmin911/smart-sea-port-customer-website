@@ -1,7 +1,8 @@
 // ignore_for_file: invalid_use_of_protected_member
 
+import 'dart:async';
 import 'dart:convert';
-
+import 'package:final_project_customer_website/constants/apikeys.dart';
 import 'package:final_project_customer_website/controller/customer_controller.dart';
 import 'package:final_project_customer_website/model/shipment_model.dart';
 import 'package:final_project_customer_website/view/widgets/common_widgets/getx_snackbar.dart';
@@ -15,48 +16,54 @@ class OrderController extends GetxController {
   var isLoading = false.obs;
   final DatabaseReference _shipmentRef =
       FirebaseDatabase.instance.ref().child('shipments');
-  final DatabaseReference _blockChainRef =
-      FirebaseDatabase.instance.ref().child('BlockchainTriggers');
 
   Rx<ShipmentModel?> currentShipment = Rx<ShipmentModel?>(null);
   RxList<ShipmentModel> shipmentsList = <ShipmentModel>[].obs;
   RxMap<String, Map<String, String>> blockChainData =
       <String, Map<String, String>>{}.obs;
   final CustomerController customerController = Get.put(CustomerController());
+  Timer? _portEntryTimer;
+  Timer? _shipmentMonitorTimer;
 
   @override
   void onInit() async {
     super.onInit();
-    await fetchUserShipments(_auth.currentUser!.uid);
+    if (_auth.currentUser != null) {
+      await fetchUserShipments(_auth.currentUser!.uid);
+      String? shipmentId =
+          customerController.currentCustomer.value.currentOrderId;
+      await listenToPortEntryTrigger(shipmentId);
+    }
   }
 
-  // Add a new shipment with Firebase-generated ID
+  @override
+  void onClose() {
+    _portEntryTimer?.cancel();
+    _shipmentMonitorTimer?.cancel();
+    super.onClose();
+  }
+
   Future<void> addShipment(ShipmentModel shipment) async {
     isLoading.value = true;
     try {
-      String? shipmentId = _shipmentRef
-          .push()
-          .key; // Generate a unique shipment ID from Firebase
-
+      String? shipmentId = _shipmentRef.push().key;
       if (shipmentId != null && shipmentId.isNotEmpty) {
-        // Assign the Firebase-generated ID to the shipment model
-        shipment.shipmentId = shipmentId;
-
-        // Save the shipment data to Firebase
-
+        shipment.shipmentId = shipmentId.toUpperCase();
         customerController.currentCustomer.value.orders
             .add(shipment.shipmentId);
-        await _shipmentRef.child(shipmentId).set(shipment.toJson());
+        await _shipmentRef.child(shipment.shipmentId).set(shipment.toJson());
         await customerController.updateCustomerData(
           customerController.currentCustomer.value.uid,
           {'orders': customerController.currentCustomer.value.orders},
           1,
         );
+        shipmentsList.add(shipment);
         isLoading.value = false;
         Get.back();
         getxSnackbar(
-            title: "Success",
-            msg: "Order submitted successfully, please wait for approval.");
+          title: "Success",
+          msg: "Order submitted successfully, please wait for approval.",
+        );
       } else {
         isLoading.value = false;
         getxSnackbar(title: "Error", msg: 'Failed to generate shipment ID');
@@ -67,24 +74,24 @@ class OrderController extends GetxController {
     }
   }
 
-  // Fetch a specific shipment
   void fetchShipment(String shipmentId) {
     _shipmentRef.child(shipmentId).onValue.listen((event) {
       if (event.snapshot.exists) {
         final data = event.snapshot.value as Map<dynamic, dynamic>?;
         if (data != null) {
-          Map<String, dynamic> shipmentData = Map<String, dynamic>.from(data);
-          currentShipment.value = ShipmentModel.fromFirebase(shipmentData);
+          currentShipment.value =
+              ShipmentModel.fromFirebase(Map<String, dynamic>.from(data));
         } else {
           print('Shipment data is null');
         }
       } else {
         print('Shipment not found in the database.');
       }
+    }, onError: (error) {
+      print('Error fetching shipment: $error');
     });
   }
 
-  // Fetch all shipments
   Future<void> fetchAllShipments() async {
     _shipmentRef.onValue.listen((event) {
       final List<ShipmentModel> updatedShipments = [];
@@ -92,34 +99,34 @@ class OrderController extends GetxController {
         Map<dynamic, dynamic> data =
             event.snapshot.value as Map<dynamic, dynamic>;
         data.forEach((key, value) {
-          Map<String, dynamic> shipmentData = Map<String, dynamic>.from(value);
-          updatedShipments.add(ShipmentModel.fromFirebase(shipmentData));
+          updatedShipments.add(
+              ShipmentModel.fromFirebase(Map<String, dynamic>.from(value)));
         });
         shipmentsList.value = updatedShipments;
       }
+    }, onError: (error) {
+      print('Error fetching all shipments: $error');
     });
   }
 
-  // Listen for real-time updates on a shipment
   void listenToShipmentUpdates(String shipmentId) {
     _shipmentRef.child(shipmentId).onValue.listen((event) {
       if (event.snapshot.exists) {
-        Map<String, dynamic> shipmentData =
-            Map<String, dynamic>.from(event.snapshot.value as Map);
-        currentShipment.value = ShipmentModel.fromFirebase(shipmentData);
+        currentShipment.value = ShipmentModel.fromFirebase(
+          Map<String, dynamic>.from(event.snapshot.value as Map),
+        );
       }
+    }, onError: (error) {
+      print('Error listening to shipment updates: $error');
     });
   }
 
-  // Update shipment details
   Future<void> updateShipmentData(
       String shipmentId, Map<String, dynamic> updatedData, int index) async {
     if (shipmentId.isEmpty) {
       print("Error: Invalid shipment ID");
       return;
     }
-
-    // Example: Updating different parts of the shipment based on the index
     switch (index) {
       case 1:
         print("Updating shipment status...");
@@ -133,7 +140,6 @@ class OrderController extends GetxController {
       default:
         break;
     }
-
     try {
       await _shipmentRef.child(shipmentId).update(updatedData);
       print("Shipment updated successfully!");
@@ -142,35 +148,68 @@ class OrderController extends GetxController {
     }
   }
 
-// Fetch shipments for a specific user
   Future<void> fetchUserShipments(String userId) async {
-    _shipmentRef
-        .orderByChild('senderId')
-        .equalTo(userId)
-        .onValue
-        .listen((event) {
+    _shipmentRef.orderByChild('senderId').equalTo(userId).onValue.listen(
+        (event) {
       final List<ShipmentModel> userShipments = [];
-
       if (event.snapshot.exists && event.snapshot.value != null) {
         Map<dynamic, dynamic> data =
             event.snapshot.value as Map<dynamic, dynamic>;
-
         data.forEach((key, value) {
-          Map<String, dynamic> shipmentData = Map<String, dynamic>.from(value);
-          userShipments.add(ShipmentModel.fromFirebase(shipmentData));
+          userShipments.add(
+              ShipmentModel.fromFirebase(Map<String, dynamic>.from(value)));
         });
+        shipmentsList.value = userShipments;
 
-        shipmentsList.value =
-            userShipments; // Update the observable list with user-specific shipments
+        if (shipmentsList.value
+                    .firstWhere((e) =>
+                        e.shipmentId ==
+                        customerController.currentCustomer.value.currentOrderId)
+                    .portEntryTrigger ==
+                "1" &&
+            shipmentsList.value
+                    .firstWhere((e) =>
+                        e.shipmentId ==
+                        customerController.currentCustomer.value.currentOrderId)
+                    .containerStoredTrigger !=
+                "1") {
+          updateShipmentStatus(
+              customerController.currentCustomer.value.currentOrderId,
+              ShipmentStatus.enteredPort);
+        } else if (shipmentsList.value
+                    .firstWhere((e) =>
+                        e.shipmentId ==
+                        customerController.currentCustomer.value.currentOrderId)
+                    .portEntryTrigger ==
+                "1" &&
+            shipmentsList.value
+                    .firstWhere((e) =>
+                        e.shipmentId ==
+                        customerController.currentCustomer.value.currentOrderId)
+                    .containerStoredTrigger ==
+                "1") {
+          updateShipmentStatus(
+              customerController.currentCustomer.value.currentOrderId,
+              ShipmentStatus.unLoaded);
+        }
+        print(
+            'Updated shipmentsList: ${shipmentsList.map((s) => s.shipmentId).toList()}');
       } else {
-        shipmentsList.clear(); // Clear the list if no shipments are found
+        shipmentsList.clear();
+        print('No shipments found for userId: $userId');
       }
+    }, onError: (error) {
+      print('Error fetching user shipments: $error');
+      getxSnackbar(
+          title: 'Error', msg: 'Failed to fetch user shipments: $error');
     });
   }
 
   Future<void> updateShipmentOrderId(String shipmentId, String orderId) async {
     try {
-      await _shipmentRef.child(shipmentId).update({'orderId': orderId});
+      await _shipmentRef
+          .child(shipmentId)
+          .update({'orderId': orderId.toUpperCase()});
     } catch (e) {
       throw Exception("Failed to update shipment order ID: $e");
     }
@@ -179,10 +218,10 @@ class OrderController extends GetxController {
   Future<void> updateShipmentPaymentStatus(
       String shipmentId, bool paymentStatus) async {
     try {
-      await _shipmentRef.child(shipmentId).update({'isPaid': paymentStatus});
-      await _shipmentRef
-          .child(shipmentId)
-          .update({'shipmentStatus': ShipmentStatus.inTransit.name});
+      await _shipmentRef.child(shipmentId).update({
+        'isPaid': paymentStatus,
+        'shipmentStatus': ShipmentStatus.inTransit.name,
+      });
     } catch (e) {
       throw Exception("Failed to update shipment payment status: $e");
     }
@@ -193,82 +232,82 @@ class OrderController extends GetxController {
     try {
       await _shipmentRef.child(shipmentId).update({'senderAddress': country});
     } catch (e) {
-      throw Exception("Failed to update shipment payment status: $e");
+      throw Exception("Failed to update shipment sender location: $e");
     }
   }
 
   Future<void> updateShipmentStatus(
       String shipmentId, ShipmentStatus shipmentStatus) async {
     try {
-      await _shipmentRef
-          .child(shipmentId)
-          .update({'shipmentStatus': shipmentStatus.name});
+      final snapshot =
+          await _shipmentRef.child(shipmentId).child('shipmentStatus').get();
+      if (snapshot.exists && snapshot.value == shipmentStatus.name) {
+        print(
+            'Shipment $shipmentId already has status ${shipmentStatus.name}, skipping update');
+        return;
+      }
+      await _shipmentRef.child(shipmentId).update({
+        'shipmentStatus': shipmentStatus.name,
+        'enteredPort':
+            shipmentStatus == ShipmentStatus.enteredPort ? 'enteredPort' : '',
+      });
+      print('Shipment $shipmentId updated to status ${shipmentStatus.name}');
+      if (shipmentStatus == ShipmentStatus.unLoaded) {
+        _portEntryTimer?.cancel();
+        _shipmentMonitorTimer?.cancel();
+        print('Terminal status reached for $shipmentId, stopped polling');
+      }
     } catch (e) {
+      print('Failed to update shipment status for $shipmentId: $e');
       throw Exception("Failed to update shipment status: $e");
     }
   }
 
   Future<void> postContainerId(String containerId) async {
-    final url = Uri.parse(
-        'https://6eea0204e9700433e95130a6d7956795.serveo.net/containers');
+    final url = Uri.parse(KapiKeys.blockChainUrl);
     final headers = {
       'Content-Type': 'application/json',
       'ngrok-skip-browser-warning': 'skip-browser-warning',
     };
-
-    final body = jsonEncode({'containerId': containerId}); // ✅ proper JSON body
+    final body = jsonEncode({'containerId': containerId});
 
     isLoading.value = true;
-    // postSuccess.value = false;
-    // errorMessage.value = '';
-
     try {
       final response = await http.post(url, headers: headers, body: body);
-
       print('Response: ${response.statusCode} - ${response.body}');
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        // postSuccess.value = true;
-      } else {
-        // errorMessage.value = 'Error: ${response.statusCode} - ${response.body}';
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        print(
+            'Error posting container ID: ${response.statusCode} - ${response.body}');
       }
     } catch (e) {
-      // errorMessage.value = 'Exception: $e';
+      print('Exception posting container ID: $e');
     } finally {
       isLoading.value = false;
     }
   }
 
-  Future<void> fetchPortEntryStatus(String shipmentId) async {
-    _blockChainRef.orderByChild('ID').equalTo(shipmentId).onValue.listen(
-        (event) {
-      final convertedData = <String, Map<String, String>>{};
-      if (event.snapshot.exists && event.snapshot.value != null) {
-        final data = event.snapshot.value as Map<dynamic, dynamic>;
-        data.forEach((key, value) {
-          final nestedMap = (value as Map<dynamic, dynamic>).map(
-            (k, v) => MapEntry(k.toString(), v.toString()),
-          );
-          convertedData[key.toString()] = nestedMap;
-        });
-        blockChainData.value = convertedData;
+  Future<void> listenToPortEntryTrigger(String? shipmentId) async {
+    if (shipmentId == null || shipmentId.trim().isEmpty) {
+      print("Invalid shipmentId passed to listener.");
+      return;
+    }
 
-        if (blockChainData.value.containsKey('test456') &&
-            blockChainData.value['test456']!['PortEntryTrigger'] == '1') {
-          updateShipmentStatus(shipmentId, ShipmentStatus.enteredPort);
-        }
+    _shipmentRef.child(shipmentId).onValue.listen((event) async {
+      if (event.snapshot.exists) {
+        final data = Map<String, dynamic>.from(event.snapshot.value as Map);
 
-        if (blockChainData.value.containsKey('test456') &&
-            blockChainData.value['test456']!['ContainerStoredTrigger'] == '1') {
-          updateShipmentStatus(shipmentId, ShipmentStatus.unLoaded);
+        if (data['PortEntryTrigger'] == 1 &&
+            data['shipmentStatus'] != 'enteredPort') {
+          await _shipmentRef.child(shipmentId).update({
+            'shipmentStatus': 'enteredPort',
+            'enteredPort': 'enteredPort',
+          }).then((_) {
+            print('Shipment $shipmentId updated to enteredPort.');
+          }).catchError((error) {
+            print('Failed to update shipment: $error');
+          });
         }
-      } else {
-        blockChainData.clear();
       }
-    }, onError: (error) {
-      print('Error fetching port entry status: $error');
-      getxSnackbar(
-          title: 'Error', msg: 'Failed to fetch port entry status: $error');
     });
   }
 }

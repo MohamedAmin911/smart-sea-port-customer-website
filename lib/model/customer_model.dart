@@ -14,6 +14,7 @@ class CustomerModel {
   final String companyRegistrationNumber;
   final String companyImportLicenseNumber;
   final List<String> orders;
+  final String currentOrderId;
   final AccountStatus accountStatus;
   CustomerModel({
     this.uid = "",
@@ -25,6 +26,7 @@ class CustomerModel {
     required this.companyRegistrationNumber,
     required this.companyImportLicenseNumber,
     this.orders = const [],
+    this.currentOrderId = "",
     this.accountStatus = AccountStatus.waitingApproval,
   });
   // Convert a Map object into a User object
@@ -41,6 +43,7 @@ class CustomerModel {
       orders: json["orders"] != null
           ? List<String>.from(json["orders"].map((x) => x))
           : [],
+      currentOrderId: json['currentOrderId'] as String,
       accountStatus: AccountStatus.values.firstWhere(
         (e) => e.toString().split('.').last == json['accountStatus'],
         orElse: () => AccountStatus.waitingApproval, // Default if invalid
@@ -59,6 +62,7 @@ class CustomerModel {
       'companyRegistrationNumber': companyRegistrationNumber,
       'companyImportLicenseNumber': companyImportLicenseNumber,
       "orders": orders,
+      'currentOrderId': currentOrderId,
       "accountStatus": accountStatus.toString().split('.').last,
     };
   }
