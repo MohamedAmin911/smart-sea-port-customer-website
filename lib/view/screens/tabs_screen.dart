@@ -152,9 +152,11 @@ class _TabsScreenState extends State<TabsScreen>
                     ),
                   ),
         body: isLoading.value
-            ? const Center(child: CircularProgressIndicator())
+            ? const Center(
+                child: CircularProgressIndicator(color: Kcolor.primary))
             : customerController.currentCustomer.value.uid.isEmpty
-                ? const Center(child: Text('Customer data not available'))
+                ? const Center(
+                    child: CircularProgressIndicator(color: Kcolor.primary))
                 : customerController.currentCustomer.value.accountStatus.name ==
                         AccountStatus.waitingApproval.name
                     ? Center(
