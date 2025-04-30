@@ -34,6 +34,7 @@ dependencies:
   firebase_auth: ^5.5.2
   firebase_core: 
   firebase_database:
+  flutter_inappwebview:
   flutter:
     sdk: flutter
   flutter_paymob: ^1.0.5
@@ -56,7 +57,7 @@ dependencies:
   google_maps_flutter:
   country_picker:
   google_maps_webservice: 
-  google_maps_flutter_web:
+  
 
  
 
@@ -82,6 +83,7 @@ flutter:
     - assets/png/
     - assets/svg/
     - assets/map_style.json
+    - assets/map.html
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

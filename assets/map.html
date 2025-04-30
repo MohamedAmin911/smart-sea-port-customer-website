@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Google Map</title>
+  <style>
+    #map { height: 100%; width: 100%; }
+    html, body { height: 100%; margin: 0; padding: 0; }
+  </style>
+  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"></script>
+  <script>
+    let map, shipMarker, sourceMarker, destinationMarker, polyline;
+    let progress = 0;
+    let movementInterval;
+
+    function initMap() {
+      map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 2,
+        center: { lat: 0, lng: 0 },
+        styles: [ /* Add your KMapStyle.mapStyle JSON here */ ]
+      });
+
+      window.addEventListener('message', function(event) {
+        const data = JSON.parse(event.data);
+        if (data.action === 'initializeMap') {
+          const source = data.source;
+          const destination = data.destination;
+          const shipmentId = data.shipmentId;
+
+          sourceMarker = new google.maps.Marker({
+            position: source,
+            map: map,
+            title: 'Source',
+            icon: 'https://your-server/port.png'
+          });
+
+          destinationMarker = new google.maps.Marker({
+            position: destination,
+            map: map,
+            title: 'Destination',
+            icon: 'https://your-server/port.png'
+          });
+
+          shipMarker = new google.maps.Marker({
+            position: source,
+            map: map,
+            title: 'Ship',
+            icon: 'https://your-server/ship.png'
+          });
+
+          polyline = new google.maps.Polyline({
+            path: [source, destination],
+            geodesic: true,
+            strokeColor: '#FF0000',
+            strokeOpacity: 1.0,
+            strokeWeight: 4,
+            map: map
+          });
+
+          const bounds = new google.maps.LatLngBounds();
+          bounds.extend(source);
+          bounds.extend(destination);
+          map.fitBounds(bounds);
+        } else if (data.action === 'startShipMovement') {
+          const source = data.source;
+          const destination = data.destination;
+
+          if (movementInterval) clearInterval(movementInterval);
+          movementInterval = setInterval(() => {
+            progress += 0.02;
+            if (progress >= 1) {
+              progress = 1;
+              clearInterval(movementInterval);
+            }
+
+            const lat = source.lat + (destination.lat - source.lat) * progress;
+            const lng = source.lng + (destination.lng - source.lng) * progress;
+            shipMarker.setPosition({ lat, lng });
+
+            window.flutter_inappwebview.callHandler('updatePosition', { lat, lng, progress });
+          }, 2000);
+        }
+      });
+    }
+  </script>
+</head>
+<body onload="initMap()">
+  <div id="map"></div>
+</body>
+</html>

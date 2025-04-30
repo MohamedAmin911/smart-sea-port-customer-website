@@ -52,7 +52,8 @@ class MapScreen extends StatelessWidget {
 
                 controller.startShipMovement();
               } catch (e) {
-                Get.snackbar('Error', 'Failed to initialize map: $e');
+                // Get.snackbar('Error', 'Failed to initialize map: $e');
+                // print(e);
               }
             });
           },

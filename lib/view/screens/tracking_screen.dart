@@ -85,7 +85,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
       ShipmentStatus.waitngPayment.name,
       ShipmentStatus.onHold.name,
       ShipmentStatus.enteredPort.name,
-      "waitingApproval", // Assuming this is not a defined enum
+      ShipmentStatus.waitingApproval.name,
     ];
 
     for (final status in priorities) {
