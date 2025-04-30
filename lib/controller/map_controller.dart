@@ -228,64 +228,68 @@ class ShipController extends GetxController {
   }
 
   // Simulate ship movement
-  void startShipMovement() async {
+  void startShipMovement() {
     if (!iconsLoaded.value) {
       getxSnackbar(
           title: 'Warning', msg: 'Waiting for custom icons to load...');
       return;
     }
 
-    movementTimer?.cancel();
-    movementTimer = Timer.periodic(const Duration(seconds: 2), (timer) {
-      if (sourceLatLng.value == null || destinationLatLng.value == null) return;
-
-      // Increment progress (0.0 to 1.0)
-      progress.value += 0.02; // Adjust speed as needed
-      if (progress.value >= 1.0) {
-        progress.value = 1.0;
-        if (currentShipmentId != null) {
-          if (orderController.shipmentsList
-                  .firstWhere(
-                    (shipment) => shipment.shipmentId == currentShipmentId,
-                  )
-                  .shipmentStatus
-                  .name ==
-              ShipmentStatus.inTransit.name) {
-            orderController.updateShipmentStatus(
-              currentShipmentId!,
-              ShipmentStatus.delivered,
-            );
-          }
+    movementTimer?.cancel(); // Cancel previous timer if exists
+    movementTimer = Timer.periodic(const Duration(seconds: 2), (timer) async {
+      try {
+        if (sourceLatLng.value == null || destinationLatLng.value == null) {
+          timer.cancel();
+          return;
         }
+
+        progress.value += 0.02;
+        if (progress.value >= 1.0) {
+          progress.value = 1.0;
+          if (currentShipmentId != null) {
+            final shipment = orderController.shipmentsList.firstWhere(
+              (shipment) => shipment.shipmentId == currentShipmentId,
+            );
+            if (shipment.shipmentStatus.name == ShipmentStatus.inTransit.name) {
+              await orderController.updateShipmentStatus(
+                currentShipmentId!,
+                ShipmentStatus.delivered,
+              );
+            }
+          }
+          timer.cancel();
+          return;
+        }
+
+        final newLat = sourceLatLng.value!.latitude +
+            (destinationLatLng.value!.latitude - sourceLatLng.value!.latitude) *
+                progress.value;
+        final newLng = sourceLatLng.value!.longitude +
+            (destinationLatLng.value!.longitude -
+                    sourceLatLng.value!.longitude) *
+                progress.value;
+
+        shipLatLng.value = LatLng(newLat, newLng);
+
+        markers.removeWhere((m) => m.markerId.value == 'ship');
+        markers.add(Marker(
+          markerId: const MarkerId('ship'),
+          position: shipLatLng.value!,
+          infoWindow: const InfoWindow(title: 'Ship'),
+          icon: shipIcon!,
+        ));
+
+        await updateFirebasePosition(shipLatLng.value!, progress.value);
+
+        if (mapController != null) {
+          await mapController!.animateCamera(
+            CameraUpdate.newLatLng(shipLatLng.value!),
+          );
+        }
+      } catch (e) {
         timer.cancel();
+        debugPrint('Error in ship movement: $e');
       }
-
-      // Calculate new ship position
-      final newLat = sourceLatLng.value!.latitude +
-          (destinationLatLng.value!.latitude - sourceLatLng.value!.latitude) *
-              progress.value;
-      final newLng = sourceLatLng.value!.longitude +
-          (destinationLatLng.value!.longitude - sourceLatLng.value!.longitude) *
-              progress.value;
-
-      shipLatLng.value = LatLng(newLat, newLng);
-
-      // Update ship marker
-      markers.removeWhere((m) => m.markerId.value == 'ship');
-      markers.add(Marker(
-        markerId: const MarkerId('ship'),
-        position: shipLatLng.value!,
-        infoWindow: const InfoWindow(title: 'Ship'),
-        icon: shipIcon!,
-      ));
-
-      // Update Firebase
-      updateFirebasePosition(shipLatLng.value!, progress.value);
-
-      // Animate camera to follow ship
-      mapController?.animateCamera(
-        CameraUpdate.newLatLng(shipLatLng.value!),
-      );
     });
   }
 

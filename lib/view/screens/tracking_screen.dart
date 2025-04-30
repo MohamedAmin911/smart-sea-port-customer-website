@@ -39,11 +39,11 @@ class _TrackingScreenState extends State<TrackingScreen> {
   @override
   void initState() {
     super.initState();
-    Timer.periodic(const Duration(seconds: 1), (timer) async {
-      setState(() {
-        isLoading = false;
-      });
-    });
+    // Timer.periodic(const Duration(seconds: 1), (timer) async {
+    //   setState(() {
+    //     isLoading = false;
+    //   });
+    // });
     _setupBackButtonListener();
   }
 

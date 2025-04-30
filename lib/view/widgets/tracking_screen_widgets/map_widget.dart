@@ -2,7 +2,6 @@ import 'package:final_project_customer_website/constants/colors.dart';
 import 'package:final_project_customer_website/view/widgets/tracking_screen_widgets/google_maps_widget3.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'dart:async';
 
 class MapWidget extends StatefulWidget {
   const MapWidget({
@@ -16,14 +15,14 @@ class MapWidget extends StatefulWidget {
 class _MapWidgetState extends State<MapWidget> {
   bool isMapReady = true;
   @override
-  void initState() {
-    super.initState();
-    Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        isMapReady = false;
-      });
-    });
-  }
+  // void initState() {
+  //   super.initState();
+  //   Timer.periodic(const Duration(seconds: 1), (timer) {
+  //     setState(() {
+  //       isMapReady = false;
+  //     });
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +36,7 @@ class _MapWidgetState extends State<MapWidget> {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(18.r),
-        child: const MapScreen(),
+        child: MapScreen(),
 
         // const ShipMap(),
 
