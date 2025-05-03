@@ -168,14 +168,14 @@ class OrderController extends GetxController {
                     .firstWhere((e) =>
                         e.shipmentId ==
                         customerController.currentCustomer.value.currentOrderId)
-                    .portEntryTrigger ==
-                "1" &&
+                    .PortEntryTrigger ==
+                1 &&
             shipmentsList.value
                     .firstWhere((e) =>
                         e.shipmentId ==
                         customerController.currentCustomer.value.currentOrderId)
-                    .containerStoredTrigger !=
-                "1") {
+                    .ContainerStoredTrigger !=
+                1) {
           updateShipmentStatus(
               customerController.currentCustomer.value.currentOrderId,
               ShipmentStatus.enteredPort);
@@ -183,14 +183,14 @@ class OrderController extends GetxController {
                     .firstWhere((e) =>
                         e.shipmentId ==
                         customerController.currentCustomer.value.currentOrderId)
-                    .portEntryTrigger ==
-                "1" &&
+                    .PortEntryTrigger ==
+                1 &&
             shipmentsList.value
                     .firstWhere((e) =>
                         e.shipmentId ==
                         customerController.currentCustomer.value.currentOrderId)
-                    .containerStoredTrigger ==
-                "1") {
+                    .ContainerStoredTrigger ==
+                1) {
           updateShipmentStatus(
               customerController.currentCustomer.value.currentOrderId,
               ShipmentStatus.unLoaded);

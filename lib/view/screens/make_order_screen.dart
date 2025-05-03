@@ -338,7 +338,7 @@ class _MakeOrderScreenState extends State<MakeOrderScreen> {
                               .currentCustomer.value.companyName,
                           senderAddress: sourceCountry,
                           receiverAddress: customerController
-                              .currentCustomer.value.companyAddress,
+                              .currentCustomer.value.companyCity,
                           shipmentStatus: ShipmentStatus.waitingApproval,
                         ));
                       }

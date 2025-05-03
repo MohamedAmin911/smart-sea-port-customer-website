@@ -78,9 +78,7 @@ class ShipController extends GetxController {
       );
       iconsLoaded.value = true;
       update();
-    } catch (e) {
-      getxSnackbar(title: 'Error', msg: 'Failed to load custom icons: $e');
-    }
+    } catch (e) {}
   }
 
   // Fetch initial ship position from Firebase for a specific shipment
@@ -97,9 +95,7 @@ class ShipController extends GetxController {
         shipLatLng.value = sourceLatLng.value;
         await updateFirebasePosition(shipLatLng.value!, progress.value);
       }
-    } catch (e) {
-      getxSnackbar(title: 'Error', msg: 'Failed to fetch initial position: $e');
-    }
+    } catch (e) {}
   }
 
   // Geocode address to LatLng
@@ -117,7 +113,6 @@ class ShipController extends GetxController {
       }
       return null;
     } catch (e) {
-      getxSnackbar(title: 'Error', msg: 'Geocoding failed: $e');
       return null;
     }
   }
@@ -141,7 +136,6 @@ class ShipController extends GetxController {
     destinationLatLng.value = await geocodeAddress(destinationAddress);
 
     if (sourceLatLng.value == null || destinationLatLng.value == null) {
-      getxSnackbar(title: 'Error', msg: 'Failed to geocode addresses');
       return;
     }
 
@@ -222,16 +216,12 @@ class ShipController extends GetxController {
         'progress': progress,
         'timestamp': ServerValue.timestamp,
       });
-    } catch (e) {
-      getxSnackbar(title: 'Error', msg: 'Failed to update position: $e');
-    }
+    } catch (e) {}
   }
 
   // Simulate ship movement
   void startShipMovement() async {
     if (!iconsLoaded.value) {
-      getxSnackbar(
-          title: 'Warning', msg: 'Waiting for custom icons to load...');
       return;
     }
 

@@ -19,9 +19,9 @@ class ShipmentModel {
   final String submitedDate;
   final String shipmentType;
   final Map<String, dynamic> shipmentSize;
-  final String containerStoredTrigger;
+  final int ContainerStoredTrigger;
 
-  final String portEntryTrigger;
+  final int PortEntryTrigger;
 
   final String receiverAddress;
   final ShipmentStatus shipmentStatus;
@@ -48,8 +48,8 @@ class ShipmentModel {
     this.shippingCost = 0,
     this.isPaid = false,
     this.orderId = "",
-    this.portEntryTrigger = "0",
-    this.containerStoredTrigger = "0",
+    this.PortEntryTrigger = 0,
+    this.ContainerStoredTrigger = 0,
   });
 
   // Convert a Map object into a ShipmentModel object
@@ -72,8 +72,8 @@ class ShipmentModel {
       orderId: json['orderId'] as String? ?? "",
       isPaid: json['isPaid'] as bool? ?? false,
       estimatedDeliveryDate: json['estimatedDeliveryDate'] as String? ?? "",
-      portEntryTrigger: json['portEntryTrigger'] as String? ?? "",
-      containerStoredTrigger: json['containerStoredTrigger'] as String? ?? "",
+      PortEntryTrigger: json['PortEntryTrigger'] as int? ?? 0,
+      ContainerStoredTrigger: json['ContainerStoredTrigger'] as int? ?? 0,
     );
   }
   static Map<String, dynamic> _convertShipmentSize(dynamic sizeData) {
@@ -100,8 +100,8 @@ class ShipmentModel {
       'orderId': orderId,
       'isPaid': isPaid,
       'estimatedDeliveryDate': estimatedDeliveryDate,
-      'portEntryTrigger': portEntryTrigger,
-      'containerStoredTrigger': containerStoredTrigger,
+      'PortEntryTrigger': PortEntryTrigger,
+      'ContainerStoredTrigger': ContainerStoredTrigger,
     };
   }
 }
