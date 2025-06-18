@@ -5,7 +5,6 @@ import 'package:final_project_customer_website/constants/apikeys.dart';
 import 'package:final_project_customer_website/constants/colors.dart';
 import 'package:final_project_customer_website/controller/order_controller.dart';
 import 'package:final_project_customer_website/model/shipment_model.dart';
-import 'package:final_project_customer_website/view/widgets/common_widgets/getx_snackbar.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

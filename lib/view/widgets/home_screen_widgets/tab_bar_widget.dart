@@ -40,7 +40,8 @@ class TabBarWidget extends StatelessWidget {
           labelStyle: appStyle(
               size: 16.sp, color: Kcolor.text, fontWeight: FontWeight.w500),
           splashBorderRadius: BorderRadius.circular(22.r),
-          physics: const BouncingScrollPhysics(),
+          physics: NeverScrollableScrollPhysics(),
+          indicatorAnimation: TabIndicatorAnimation.linear,
           dividerColor: Colors.transparent,
           controller: _tabController,
           indicator: BoxDecoration(

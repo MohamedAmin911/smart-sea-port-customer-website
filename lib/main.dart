@@ -2,6 +2,7 @@ import 'package:final_project_customer_website/constants/colors.dart';
 import 'package:final_project_customer_website/constants/text.dart';
 import 'package:final_project_customer_website/controller/authentication_controller.dart';
 import 'package:final_project_customer_website/view/screens/authentication_screens/main_screen.dart';
+import 'package:final_project_customer_website/view/screens/authentication_screens/signup_or_login_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -59,6 +60,8 @@ class MyApp extends StatelessWidget {
             home:
 
                 // const PaymentScreen(),
+
+                // const SignUpOrLogInScreen(),
                 const MainScreen(),
           );
         });

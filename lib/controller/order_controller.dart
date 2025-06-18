@@ -95,22 +95,22 @@ class OrderController extends GetxController {
     });
   }
 
-  Future<void> fetchAllShipments() async {
-    _shipmentRef.onValue.listen((event) {
-      final List<ShipmentModel> updatedShipments = [];
-      if (event.snapshot.value != null) {
-        Map<dynamic, dynamic> data =
-            event.snapshot.value as Map<dynamic, dynamic>;
-        data.forEach((key, value) {
-          updatedShipments.add(
-              ShipmentModel.fromFirebase(Map<String, dynamic>.from(value)));
-        });
-        shipmentsList.value = updatedShipments;
-      }
-    }, onError: (error) {
-      print('Error fetching all shipments: $error');
-    });
-  }
+  // Future<void> fetchAllShipments() async {
+  //   _shipmentRef.onValue.listen((event) {
+  //     final List<ShipmentModel> updatedShipments = [];
+  //     if (event.snapshot.value != null) {
+  //       Map<dynamic, dynamic> data =
+  //           event.snapshot.value as Map<dynamic, dynamic>;
+  //       data.forEach((key, value) {
+  //         updatedShipments.add(
+  //             ShipmentModel.fromFirebase(Map<String, dynamic>.from(value)));
+  //       });
+  //       shipmentsList.value = updatedShipments;
+  //     }
+  //   }, onError: (error) {
+  //     print('Error fetching all shipments: $error');
+  //   });
+  // }
 
   void listenToShipmentUpdates(String shipmentId) {
     _shipmentRef.child(shipmentId).onValue.listen((event) {

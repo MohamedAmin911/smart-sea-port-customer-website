@@ -40,7 +40,7 @@ class _MapScreenState extends State<MapScreen> {
         // Initialize map with source and destination addresses
         await controller.initializeMap(
             shipment.senderAddress, // Source address
-            "Egypt",
+            "Port Said",
             shipment.shipmentId // Destination address
             );
 

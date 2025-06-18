@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class TabsScreen extends StatefulWidget {
   const TabsScreen({super.key});
@@ -50,8 +51,22 @@ class _TabsScreenState extends State<TabsScreen>
 
   Future<void> _initializeData() async {
     try {
-      customerController
-          .fetchCurrentCustomer(customerController.currentCustomer.value.uid);
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        // Reset currentCustomer to avoid stale data
+        customerController.currentCustomer.value = CustomerModel(
+          uid: user.uid,
+          companyName: '',
+          companyAddress: '',
+          companyEmail: '',
+          companyPhoneNumber: '',
+          companyCity: '',
+          companyRegistrationNumber: '',
+          companyImportLicenseNumber: '',
+          orders: [],
+        );
+        customerController.fetchCurrentCustomer(user.uid);
+      }
       isLoading.value = false;
     } catch (e) {
       isLoading.value = false;
@@ -211,7 +226,6 @@ class _TabsScreenState extends State<TabsScreen>
                             ),
                           )
                         : PageView(
-                            physics: const NeverScrollableScrollPhysics(),
                             controller: controller,
                             children: const [
                               TrackingScreen(),
