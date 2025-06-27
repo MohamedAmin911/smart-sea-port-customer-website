@@ -56,7 +56,7 @@ class CostsWidget2 extends StatelessWidget {
                 ),
                 SizedBox(height: 20.h),
                 Text(
-                  "${currentShipment.shippingCost} EGP",
+                  "${currentShipment.shippingCost.ceil()} EGP",
                   textAlign: TextAlign.start,
                   style: appStyle(
                       size: 40.sp,
