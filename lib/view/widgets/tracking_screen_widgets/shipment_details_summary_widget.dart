@@ -63,7 +63,17 @@ class ShipmentDetailsSummaryWidget extends StatelessWidget {
                         ? "IN TRANSIT"
                         : currentShipment.shipmentStatus.name == "waitingPickup"
                             ? "WAITING PICKUP"
-                            : currentShipment.shipmentStatus.name.toUpperCase(),
+                            : currentShipment.shipmentStatus.name ==
+                                    "checkPointA"
+                                ? "CHECKPOINT A"
+                                : currentShipment.shipmentStatus.name ==
+                                        "unLoaded"
+                                    ? "UNLOADED"
+                                    : currentShipment.shipmentStatus.name ==
+                                            "delivered"
+                                        ? "DELIVERED"
+                                        : currentShipment.shipmentStatus.name
+                                            .toUpperCase(),
                     style: appStyle(
                         size: 13.sp,
                         color: Kcolor.primary,

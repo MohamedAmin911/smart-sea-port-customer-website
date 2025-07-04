@@ -11,6 +11,7 @@ class ShipmentCheckpoint extends StatelessWidget {
 
   final Map<ShipmentStatus, String> statusLabels = {
     ShipmentStatus.inTransit: "In Transit",
+    ShipmentStatus.checkPointA: "Checkpoint A",
     ShipmentStatus.delivered: "Delivered",
     ShipmentStatus.enteredPort: "Entered Port",
     ShipmentStatus.unLoaded: "Unloaded",
@@ -19,6 +20,7 @@ class ShipmentCheckpoint extends StatelessWidget {
 
   List<ShipmentStatus> get orderedSteps => [
         ShipmentStatus.inTransit,
+        ShipmentStatus.checkPointA,
         ShipmentStatus.delivered,
         ShipmentStatus.enteredPort,
         ShipmentStatus.unLoaded,
@@ -66,14 +68,14 @@ class ShipmentCheckpoint extends StatelessWidget {
                         SizedBox(height: 10.h),
                         //checkpoint icon
                         Container(
-                          padding: const EdgeInsets.all(2),
+                          padding: const EdgeInsets.all(1),
                           decoration: BoxDecoration(
                             color: isActive ? Kcolor.primary : Kcolor.primary,
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
                             isActive ? Icons.check_rounded : Icons.circle,
-                            size: 25.sp,
+                            size: 20.sp,
                             color: Kcolor.background,
                             weight: 1,
                           ),
@@ -87,7 +89,7 @@ class ShipmentCheckpoint extends StatelessWidget {
                           Row(
                             children: [
                               Container(
-                                width: 30,
+                                width: 20,
                                 height: 4,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
@@ -98,7 +100,7 @@ class ShipmentCheckpoint extends StatelessWidget {
                                 ),
                               ),
                               Container(
-                                width: 30,
+                                width: 20,
                                 height: 4,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
@@ -109,7 +111,7 @@ class ShipmentCheckpoint extends StatelessWidget {
                                 ),
                               ),
                               Container(
-                                width: 30,
+                                width: 20,
                                 height: 4,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,

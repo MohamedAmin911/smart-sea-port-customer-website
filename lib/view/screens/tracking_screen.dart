@@ -79,6 +79,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
   ShipmentStatus? _getPrimaryStatus() {
     final priorities = [
       ShipmentStatus.inTransit.name,
+      ShipmentStatus.checkPointA.name,
       ShipmentStatus.delivered.name,
       ShipmentStatus.waitingPickup.name,
       ShipmentStatus.unLoaded.name,
@@ -124,6 +125,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
           return _buildPaymentPrompt(currentShipment!);
 
         case "inTransit":
+        case "checkPointA":
         case "delivered":
         case "waitingPickup":
         case "unLoaded":

@@ -20,13 +20,13 @@ class CostsWidget2 extends StatelessWidget {
                     (double.parse(currentShipment.shipmentSize["height"]) *
                         0.01)) *
                 100) *
-            50;
+            50.abs();
 
     final double shippingCharges =
-        currentShipment.shippingCost - ((1000 * 50) + (customsFees));
+        currentShipment.shippingCost - ((1000 * 50) + (customsFees)).ceil();
 
-    final double additionalCharges =
-        currentShipment.shippingCost - ((shippingCharges) + (customsFees));
+    final double additionalCharges = currentShipment.shippingCost -
+        ((shippingCharges) + (customsFees)).ceil();
     return Column(
       children: [
         SizedBox(
@@ -103,7 +103,7 @@ class CostsWidget2 extends StatelessWidget {
                                 ),
                                 SizedBox(height: 10.h),
                                 Text(
-                                  "$customsFees EGP",
+                                  "${customsFees.ceil()} EGP",
                                   textAlign: TextAlign.start,
                                   style: appStyle(
                                       size: 20.sp,
@@ -149,7 +149,7 @@ class CostsWidget2 extends StatelessWidget {
                                 ),
                                 SizedBox(height: 10.h),
                                 Text(
-                                  "$shippingCharges EGP",
+                                  "${shippingCharges.ceil()} EGP",
                                   textAlign: TextAlign.start,
                                   style: appStyle(
                                       size: 20.sp,
@@ -195,7 +195,7 @@ class CostsWidget2 extends StatelessWidget {
                                 ),
                                 SizedBox(height: 10.h),
                                 Text(
-                                  "$additionalCharges EGP",
+                                  "${additionalCharges.ceil()} EGP",
                                   textAlign: TextAlign.start,
                                   style: appStyle(
                                       size: 20.sp,

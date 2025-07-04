@@ -30,7 +30,6 @@ environment:
 dependencies:
   cloud_firestore: null
   cupertino_icons: ^1.0.8
-  dio: ^5.8.0+1
   firebase_auth: ^5.6.0
   firebase_core: 
   firebase_database:
@@ -49,6 +48,7 @@ dependencies:
   image_picker: null
   table_calendar:
   intl:
+  dio: 
   # latlong2: null
   location: null
   paymob_flutter_lib: ^1.0.9

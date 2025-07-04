@@ -25,7 +25,6 @@ class ShipController extends GetxController {
   final markers = <Marker>{}.obs;
   final polylines = <Polyline>{}.obs;
 
-  // --- NEW: A list to hold the points for our curved sea route ---
   final List<LatLng> seaRoutePoints = [];
 
   String? currentShipmentId;
@@ -38,6 +37,15 @@ class ShipController extends GetxController {
   BitmapDescriptor? shipIcon;
   final iconsLoaded = false.obs;
 
+  final isAtCheckpoint = false.obs;
+  bool checkpointReached = false;
+
+  final Rx<ShipmentModel?> trackedShipment = Rx<ShipmentModel?>(null);
+  StreamSubscription<DatabaseEvent>? _shipmentSubscription;
+
+  bool isSimulationFinished = false;
+  final isLoading = false.obs;
+
   @override
   void onInit() async {
     super.onInit();
@@ -48,8 +56,15 @@ class ShipController extends GetxController {
   void onClose() {
     movementTimer?.cancel();
     mapController?.dispose();
+    _shipmentSubscription?.cancel();
     super.onClose();
   }
+
+  // This function is commented out as per your provided code.
+  // Future<void> updateBlockchainStatus(
+  //     String shipmentId, String newStatus) async {
+  //   // ...
+  // }
 
   Future<void> _loadCustomIcons() async {
     try {
@@ -97,24 +112,17 @@ class ShipController extends GetxController {
     }
   }
 
-  // --- NEW: Generates a curved path between two points ---
   void _calculateSeaRoute(LatLng start, LatLng end) {
     seaRoutePoints.clear();
-    const pointCount = 50; // More points create a smoother curve
-
-    // Find a control point to create the curve.
-    // This pushes the line away from the direct center.
+    const pointCount = 50;
     final midPoint = LatLng((start.latitude + end.latitude) / 2,
         (start.longitude + end.longitude) / 2);
     final controlPoint = LatLng(
-        midPoint.latitude -
-            (end.longitude - start.longitude) *
-                0.2, // Adjust the multiplier for more/less curve
+        midPoint.latitude - (end.longitude - start.longitude) * 0.2,
         midPoint.longitude + (end.latitude - start.latitude) * 0.2);
 
     for (int i = 0; i <= pointCount; i++) {
       final t = i / pointCount.toDouble();
-      // Quadratic Bezier curve formula for a simple, nice-looking curve
       final lat = pow(1 - t, 2) * start.latitude +
           2 * (1 - t) * t * controlPoint.latitude +
           pow(t, 2) * end.latitude;
@@ -130,19 +138,29 @@ class ShipController extends GetxController {
     currentShipmentId = shipmentId;
     database = FirebaseDatabase.instance.ref('ship_positions/$shipmentId');
 
+    _shipmentSubscription?.cancel();
+    _shipmentSubscription = FirebaseDatabase.instance
+        .ref('shipments/$shipmentId')
+        .onValue
+        .listen((event) {
+      if (event.snapshot.exists) {
+        trackedShipment.value = ShipmentModel.fromFirebase(
+            Map<String, dynamic>.from(event.snapshot.value as Map));
+      }
+    });
+
+    isSimulationFinished = false;
+    checkpointReached = false;
+    isAtCheckpoint.value = false;
     progress.value = 0.0;
     shipLatLng.value = null;
 
     sourceLatLng.value = await geocodeAddress(sourceAddress);
     destinationLatLng.value = await geocodeAddress(destinationAddress);
 
-    if (sourceLatLng.value == null || destinationLatLng.value == null) {
-      return;
-    }
+    if (sourceLatLng.value == null || destinationLatLng.value == null) return;
 
-    // --- MODIFIED: Calculate the curved route ---
     _calculateSeaRoute(sourceLatLng.value!, destinationLatLng.value!);
-
     await fetchInitialPosition(shipmentId);
 
     markers.clear();
@@ -151,30 +169,21 @@ class ShipController extends GetxController {
     markers.add(Marker(
         markerId: const MarkerId('source'),
         position: sourceLatLng.value!,
-        infoWindow: const InfoWindow(title: 'Source'),
         icon: sourceIcon ?? BitmapDescriptor.defaultMarker));
     markers.add(Marker(
         markerId: const MarkerId('destination'),
         position: destinationLatLng.value!,
-        infoWindow: const InfoWindow(title: 'Destination'),
         icon: destinationIcon ?? BitmapDescriptor.defaultMarker));
     markers.add(Marker(
         markerId: const MarkerId('ship'),
         position: shipLatLng.value!,
-        infoWindow: const InfoWindow(title: 'Ship'),
         icon: shipIcon ?? BitmapDescriptor.defaultMarker));
 
-    // --- MODIFIED: Use the new seaRoutePoints for the polyline ---
     polylines.add(Polyline(
-      polylineId: const PolylineId('route'),
-      points: seaRoutePoints,
-      color: Kcolor.primary,
-      width: 4,
-    ));
-
-    if (mapController != null) {
-      // Fit map to bounds logic remains the same
-    }
+        polylineId: const PolylineId('route'),
+        points: seaRoutePoints,
+        color: Kcolor.primary,
+        width: 4));
   }
 
   Future<void> updateFirebasePosition(LatLng position, double progress) async {
@@ -189,58 +198,78 @@ class ShipController extends GetxController {
     } catch (e) {}
   }
 
-  // --- MODIFIED: The simulation now moves along the curved path ---
   void startShipMovement() async {
     if (!iconsLoaded.value) return;
+    if (isSimulationFinished) return;
+
+    if (trackedShipment.value != null &&
+        trackedShipment.value!.shipmentStatus == ShipmentStatus.delivered) {
+      print("Shipment is already delivered. Displaying ship at destination.");
+      if (destinationLatLng.value != null) {
+        shipLatLng.value = destinationLatLng.value;
+        markers.removeWhere((m) => m.markerId.value == 'ship');
+        markers.add(Marker(
+            markerId: const MarkerId('ship'),
+            position: shipLatLng.value!,
+            icon: shipIcon!));
+      }
+      return;
+    }
 
     movementTimer?.cancel();
     movementTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (seaRoutePoints.isEmpty) return;
 
-      progress.value += 0.01; // Adjust for desired speed
-      if (progress.value >= 1.0) {
-        progress.value = 1.0;
-
-        // --- THIS LOGIC HAS BEEN RESTORED ---
-        if (currentShipmentId != null) {
-          try {
-            // Find the shipment in the OrderController's list
-            final shipmentToUpdate = orderController.shipmentsList.firstWhere(
-                (shipment) => shipment.shipmentId == currentShipmentId);
-
-            // Check if it's currently in transit before updating
-            if (shipmentToUpdate.shipmentStatus == ShipmentStatus.inTransit) {
-              orderController.updateShipmentStatus(
-                currentShipmentId!,
-                ShipmentStatus.delivered,
-              );
-            }
-          } catch (e) {
-            // Handle case where shipment might not be in the list
-            print("Could not find shipment to update status: $e");
-          }
-        }
-        // --- END OF RESTORED LOGIC ---
-
-        timer.cancel();
+      // --- THIS IS THE FIX ---
+      // Changed '==' to '>=' to reliably trigger the checkpoint.
+      if (progress.value >= 0.5 && !checkpointReached) {
+        checkpointReached = true;
+        isAtCheckpoint.value = true;
+        orderController.updateShipmentStatus(
+            currentShipmentId!, ShipmentStatus.checkPointA);
+        // updateBlockchainStatus(currentShipmentId!, 'checkPointA');
+        progress.value += 0;
+        Future.delayed(const Duration(seconds: 5), () {
+          isAtCheckpoint.value = false;
+          // if (trackedShipment.value?.shipmentStatus ==
+          //     ShipmentStatus.checkPointA) {
+          //   orderController.updateShipmentStatus(
+          //       currentShipmentId!, ShipmentStatus.inTransit);
+          //   // updateBlockchainStatus(currentShipmentId!, 'inTransit');
+          // }
+        });
       }
 
-      // Calculate the ship's position along the multi-point polyline
-      final routeIndex = (progress.value * (seaRoutePoints.length - 1)).round();
-      shipLatLng.value = seaRoutePoints[routeIndex];
+      if (!isAtCheckpoint.value) {
+        progress.value += 0.01;
+        if (progress.value >= 1.0) {
+          progress.value = 1.0;
 
-      markers.removeWhere((m) => m.markerId.value == 'ship');
-      markers.add(Marker(
-        markerId: const MarkerId('ship'),
-        position: shipLatLng.value!,
-        infoWindow: const InfoWindow(title: 'Ship'),
-        icon: shipIcon!,
-      ));
+          if (currentShipmentId != null) {
+            if (trackedShipment.value != null &&
+                trackedShipment.value!.shipmentStatus ==
+                    ShipmentStatus.checkPointA) {
+              orderController.updateShipmentStatus(
+                  currentShipmentId!, ShipmentStatus.delivered);
+            }
+          }
+          isSimulationFinished = true;
+          timer.cancel();
+        }
 
-      updateFirebasePosition(shipLatLng.value!, progress.value);
+        final routeIndex =
+            (progress.value * (seaRoutePoints.length - 1)).round();
+        shipLatLng.value = seaRoutePoints[routeIndex];
 
-      // Optional: Camera follows the ship
-      // mapController?.animateCamera(CameraUpdate.newLatLng(shipLatLng.value!));
+        markers.removeWhere((m) => m.markerId.value == 'ship');
+        markers.add(Marker(
+          markerId: const MarkerId('ship'),
+          position: shipLatLng.value!,
+          infoWindow: const InfoWindow(title: 'Ship'),
+          icon: shipIcon!,
+        ));
+        updateFirebasePosition(shipLatLng.value!, progress.value);
+      }
     });
   }
 
