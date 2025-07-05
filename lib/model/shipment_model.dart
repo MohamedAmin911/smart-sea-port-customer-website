@@ -23,7 +23,7 @@ class ShipmentModel {
   final int ContainerStoredTrigger;
 
   final int PortEntryTrigger;
-
+  final String containerId;
   final String receiverAddress;
   final ShipmentStatus shipmentStatus;
   final double shipmentWeight;
@@ -35,6 +35,7 @@ class ShipmentModel {
   final String estimatedDeliveryDate;
 
   ShipmentModel({
+    this.containerId = "",
     required this.submitedDate,
     this.shipmentId = "",
     required this.senderId,
@@ -56,6 +57,7 @@ class ShipmentModel {
   // Convert a Map object into a ShipmentModel object
   factory ShipmentModel.fromFirebase(Map<String, dynamic> json) {
     return ShipmentModel(
+      containerId: json['containerId'] as String? ?? "",
       shipmentType: json['shipmentType'] as String? ?? "",
       submitedDate: json['submitedDate'] as String? ?? "",
       shipmentId: json['shipmentId'] as String? ?? "",
@@ -87,6 +89,7 @@ class ShipmentModel {
   // Convert a ShipmentModel object into a Map
   Map<String, dynamic> toJson() {
     return {
+      'containerId': containerId,
       'shipmentType': shipmentType,
       'submitedDate': submitedDate,
       'shipmentId': shipmentId,

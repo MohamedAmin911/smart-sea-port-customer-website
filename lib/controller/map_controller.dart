@@ -6,6 +6,7 @@ import 'package:final_project_customer_website/constants/apikeys.dart';
 import 'package:final_project_customer_website/constants/colors.dart';
 import 'package:final_project_customer_website/controller/order_controller.dart';
 import 'package:final_project_customer_website/model/shipment_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -19,6 +20,7 @@ class ShipController extends GetxController {
   final OrderController orderController = Get.find<OrderController>();
 
   // Observables for reactive state management
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   final sourceLatLng = Rx<LatLng?>(null);
   final destinationLatLng = Rx<LatLng?>(null);
   final shipLatLng = Rx<LatLng?>(null);
@@ -26,7 +28,7 @@ class ShipController extends GetxController {
   final polylines = <Polyline>{}.obs;
 
   final List<LatLng> seaRoutePoints = [];
-
+  String? currentContainerId;
   String? currentShipmentId;
   DatabaseReference? database;
   final String apiKey = KapiKeys.geocodingApiKey;
@@ -60,11 +62,38 @@ class ShipController extends GetxController {
     super.onClose();
   }
 
-  // This function is commented out as per your provided code.
-  // Future<void> updateBlockchainStatus(
-  //     String shipmentId, String newStatus) async {
-  //   // ...
-  // }
+  Future<void> updateBlockchainStatus(
+      String shipmentId, String newStatus) async {
+    // Construct the URL exactly as shown in Postman
+    final url = Uri.parse('${KapiKeys.blockChainUrl}/$shipmentId/status');
+
+    final headers = {
+      'Content-Type': 'application/json',
+      'ngrok-skip-browser-warning': 'true', // Header for ngrok
+    };
+
+    // Construct the JSON body with the "newStatus" key
+    final body = jsonEncode({'newStatus': newStatus});
+
+    print("Attempting to update blockchain status via PUT...");
+    print("URL: $url");
+    print("Payload: $body");
+
+    try {
+      // Use http.put to match the Postman request method
+      final response = await http.put(url, headers: headers, body: body);
+
+      if (response.statusCode == 200) {
+        print(
+            '✅ Blockchain status updated successfully for $shipmentId to $newStatus.');
+      } else {
+        print(
+            '❌ Error updating blockchain status: ${response.statusCode} - ${response.body}');
+      }
+    } catch (e) {
+      print('❗ Exception updating blockchain status: $e');
+    }
+  }
 
   Future<void> _loadCustomIcons() async {
     try {
@@ -133,9 +162,14 @@ class ShipController extends GetxController {
     }
   }
 
+  // In your ShipController class
   Future<void> initializeMap(String sourceAddress, String destinationAddress,
-      String shipmentId) async {
-    currentShipmentId = shipmentId;
+      String containerId, String shipmentId) async {
+    // --- THIS IS THE FIX ---
+    // Capture the containerId and shipmentId when the map is initialized
+    this.currentShipmentId = shipmentId;
+    this.currentContainerId = containerId;
+
     database = FirebaseDatabase.instance.ref('ship_positions/$shipmentId');
 
     _shipmentSubscription?.cancel();
@@ -198,6 +232,7 @@ class ShipController extends GetxController {
     } catch (e) {}
   }
 
+  // In your ShipController class
   void startShipMovement() async {
     if (!iconsLoaded.value) return;
     if (isSimulationFinished) return;
@@ -220,23 +255,30 @@ class ShipController extends GetxController {
     movementTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (seaRoutePoints.isEmpty) return;
 
-      // --- THIS IS THE FIX ---
-      // Changed '==' to '>=' to reliably trigger the checkpoint.
+      // --- THIS ENTIRE BLOCK IS NOW FIXED ---
       if (progress.value >= 0.5 && !checkpointReached) {
         checkpointReached = true;
         isAtCheckpoint.value = true;
+
         orderController.updateShipmentStatus(
             currentShipmentId!, ShipmentStatus.checkPointA);
-        // updateBlockchainStatus(currentShipmentId!, 'checkPointA');
-        progress.value += 0;
+
+        // Use the safely stored containerId
+        if (currentContainerId != null) {
+          updateBlockchainStatus(currentContainerId!, 'CHECKPOINT_A');
+        }
+
         Future.delayed(const Duration(seconds: 5), () {
           isAtCheckpoint.value = false;
+          // Restore the logic to resume the trip
           // if (trackedShipment.value?.shipmentStatus ==
           //     ShipmentStatus.checkPointA) {
           //   orderController.updateShipmentStatus(
           //       currentShipmentId!, ShipmentStatus.inTransit);
-          //   // updateBlockchainStatus(currentShipmentId!, 'inTransit');
+          // if (currentContainerId != null) {
+          //   updateBlockchainStatus(currentContainerId!, 'INTRANSIT');
           // }
+          //}
         });
       }
 
@@ -246,6 +288,7 @@ class ShipController extends GetxController {
           progress.value = 1.0;
 
           if (currentShipmentId != null) {
+            // Check for inTransit before marking as delivered
             if (trackedShipment.value != null &&
                 trackedShipment.value!.shipmentStatus ==
                     ShipmentStatus.checkPointA) {

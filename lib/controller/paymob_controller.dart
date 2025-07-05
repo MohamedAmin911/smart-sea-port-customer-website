@@ -254,7 +254,7 @@ class PayMobController extends GetxController {
         orderController.postContainerId(orderController.shipmentsList
             .firstWhere((shipment) =>
                 shipment.shipmentStatus.name == ShipmentStatus.inTransit.name)
-            .shipmentId);
+            .containerId);
 
         isLoading.value = false;
       } else {

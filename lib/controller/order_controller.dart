@@ -161,13 +161,22 @@ class OrderController extends GetxController {
   }
 
   Future<void> postContainerId(String containerId) async {
-    final url = Uri.parse('${KapiKeys.blockChainUrl}/containers');
-    final headers = {'Content-Type': 'application/json'};
+    // The endpoint for creating a new container
+    final url = Uri.parse('${KapiKeys.blockChainUrl}');
+
+    // Add the ngrok-specific header to bypass browser warnings
+    final headers = {
+      'Content-Type': 'application/json',
+      'ngrok-skip-browser-warning': 'true',
+    };
+
+    // FIX: The JSON key is now 'containerID' with a capital 'D'
     final body = jsonEncode({'containerId': containerId});
 
     isLoading.value = true;
     try {
       final response = await http.post(url, headers: headers, body: body);
+
       if (response.statusCode == 201 || response.statusCode == 200) {
         print('Container successfully posted to the blockchain.');
       } else {
