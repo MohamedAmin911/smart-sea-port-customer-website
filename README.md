@@ -1,3 +1,18 @@
 # final_project_customer_website
-
+![1](assets/png/c1.png)
+![2](assets/png/c2.png)
+![3](assets/png/c3.png)
+![4](assets/png/c4.png)
+![5](assets/png/c5.png)
+![6](assets/png/c6.png)
+![7](assets/png/c7.png)
+![8](assets/png/c8.png)
+![9](assets/png/c9.png)
+![10](assets/png/c10.png)
+![11](assets/png/c11.png)
+![12](assets/png/c12.png)
+![13](assets/png/c13.png)
+![14](assets/png/c14.png)
+![15](assets/png/c15.png)
+![16](assets/png/c16.png)
 
