@@ -39,7 +39,7 @@ class ShipmentDetailsSummaryWidget extends StatelessWidget {
           Row(
             children: [
               Text(
-                "Order #${currentShipment.shipmentId}",
+                "Order #${currentShipment.containerId}",
                 textAlign: TextAlign.start,
                 style: appStyle(
                     size: 20.sp,
