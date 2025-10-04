@@ -29,7 +29,6 @@ class CustomerModel {
     this.currentOrderId = "",
     this.accountStatus = AccountStatus.waitingApproval,
   });
-  // Convert a Map object into a User object
   factory CustomerModel.fromFirebase(Map<String, dynamic> json) {
     return CustomerModel(
       uid: json['uid'] as String? ?? "",

@@ -15,15 +15,6 @@ class MapWidget extends StatefulWidget {
 class _MapWidgetState extends State<MapWidget> {
   bool isMapReady = true;
   @override
-  // void initState() {
-  //   super.initState();
-  //   Timer.periodic(const Duration(seconds: 1), (timer) {
-  //     setState(() {
-  //       isMapReady = false;
-  //     });
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -37,10 +28,6 @@ class _MapWidgetState extends State<MapWidget> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(18.r),
         child: MapScreen(),
-
-        // const ShipMap(),
-
-        // ShipMapWidget(),
       ),
     );
   }

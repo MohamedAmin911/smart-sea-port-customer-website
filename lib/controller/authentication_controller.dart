@@ -29,7 +29,7 @@ class AuthController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    loadRememberMe(); // Load saved value at app startup
+    loadRememberMe();
   }
 
   // Registration
@@ -43,18 +43,15 @@ class AuthController extends GetxController {
     _isLoading.value = true;
 
     try {
-      // Check if the email is already registered
       List<String> signInMethods =
           await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
 
       if (signInMethods.isNotEmpty) {
-        // Email already registered
         getxSnackbar(
             title: "Error", msg: "The email address is already in use.");
         return;
       }
 
-      // If the email is not registered, proceed with registration
       UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
         email: email.trim(),
@@ -71,22 +68,18 @@ class AuthController extends GetxController {
         companyImportLicenseNumber: companyImportLicenseNumber.value,
         accountStatus: AccountStatus.waitingApproval,
       ));
-      // Registration successful
       print("User created: ${userCredential.user?.uid}");
       getxSnackbar(title: "Success", msg: "Registration successful!");
 
-      // Send email verification
       await sendEmailVerification(context);
       Get.off(const LogInScreen());
     } on FirebaseAuthException catch (e) {
-      // Handle Firebase authentication errors
       print("Error during registration: ${e.code}");
       getxSnackbar(
         title: "Error",
         msg: e.message ?? "An unexpected error occurred. Please try again.",
       );
     } catch (e) {
-      // Handle any unexpected errors
       print("Unexpected error: $e");
       getxSnackbar(title: "Error", msg: "An unexpected error occurred.");
     } finally {

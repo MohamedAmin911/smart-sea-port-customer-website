@@ -12,22 +12,16 @@ class SignUpOrLogInScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Kcolor.background,
       body: Center(
-        // Center the content
         child: Padding(
-          padding: EdgeInsets.symmetric(
-              horizontal: 20.w, vertical: 40.h), // Increased vertical padding
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 40.h),
           child: LayoutBuilder(
             builder: (context, constraints) {
               return SingleChildScrollView(
-                // Added for small screens
                 child: ConstrainedBox(
-                  // Prevents unbounded height issues
                   constraints: BoxConstraints(minHeight: constraints.maxHeight),
                   child: IntrinsicHeight(
-                    // Makes Column take only necessary height
                     child: Column(
-                      mainAxisAlignment:
-                          MainAxisAlignment.spaceAround, // Distribute space
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         buildLogo(),
                         buildButtons(),

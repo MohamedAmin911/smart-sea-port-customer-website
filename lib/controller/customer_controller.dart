@@ -49,9 +49,7 @@ class CustomerController extends GetxController {
     super.onInit();
     // fetchAllCustomers();
 
-    // Wait for auth to initialize and check if user exists
-    await Future.delayed(
-        const Duration(seconds: 0)); // Give time for auth to initialize
+    await Future.delayed(const Duration(seconds: 0));
     if (_auth.currentUser != null) {
       fetchCurrentCustomer(_auth.currentUser!.uid);
     } else {
@@ -66,7 +64,6 @@ class CustomerController extends GetxController {
         .set(customer.toJson());
   }
 
-  // Method to fetch a specific user's data
   void fetchCurrentCustomer(String customerId) {
     if (customerId.isEmpty) {
       print('Invalid customer ID');
@@ -89,35 +86,30 @@ class CustomerController extends GetxController {
         }
       } else {
         print('User not found in the database - creating new record');
-        // Consider creating a new customer record here if appropriate
       }
     }, onError: (error) {
       print('Error fetching customer: $error');
     });
   }
 
-// Fetch all drivers from the database
   Future<void> fetchAllCustomers() async {
     _databaseReference.onValue.listen((event) {
       final List<CustomerModel> updatedUsers = [];
 
-      // Cast the data properly to avoid type errors
       if (event.snapshot.value != null) {
         Map<dynamic, dynamic> data =
             event.snapshot.value as Map<dynamic, dynamic>;
 
         data.forEach((key, value) {
-          Map<String, dynamic> userData =
-              Map<String, dynamic>.from(value); // Cast each value
+          Map<String, dynamic> userData = Map<String, dynamic>.from(value);
           updatedUsers.add(CustomerModel.fromFirebase(userData));
         });
 
-        customersList.value = updatedUsers; // Update the observable list
+        customersList.value = updatedUsers;
       }
     });
   }
 
-// Listen for real-time updates
   void listenToCustomerData(String customerId) {
     _databaseReference.child(customerId).onValue.listen((event) {
       if (event.snapshot.value != null) {
@@ -128,7 +120,6 @@ class CustomerController extends GetxController {
     });
   }
 
-  // Update driver data
   Future<void> updateCustomerData(
       String customerId, Map<String, dynamic> updatedData, int index) async {
     if (customerId.isEmpty) {

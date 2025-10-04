@@ -39,11 +39,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
   @override
   void initState() {
     super.initState();
-    // Timer.periodic(const Duration(seconds: 1), (timer) async {
-    //   setState(() {
-    //     isLoading = false;
-    //   });
-    // });
+
     _setupBackButtonListener();
   }
 
@@ -107,11 +103,6 @@ class _TrackingScreenState extends State<TrackingScreen> {
       final currentShipment = shipmentList.firstWhereOrNull(
         (s) => s.shipmentStatus.name == currentStatus?.name,
       );
-
-      // if (isLoading) {
-      //   return const Center(
-      //       child: CircularProgressIndicator(color: Kcolor.primary));
-      // }
 
       switch (currentStatus?.name) {
         case "waitingApproval":

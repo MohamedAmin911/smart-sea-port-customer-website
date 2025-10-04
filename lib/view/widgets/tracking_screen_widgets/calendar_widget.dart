@@ -7,13 +7,9 @@ import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CustomCalendar extends StatefulWidget {
-  // final DateTime selectedDate;
-  // final ValueChanged<DateTime> onDateSelected;
   final ShipmentModel currentShipment;
   const CustomCalendar({
     super.key,
-    // required this.selectedDate,
-    // required this.onDateSelected,
     required this.currentShipment,
   });
 
@@ -23,12 +19,10 @@ class CustomCalendar extends StatefulWidget {
 
 class _CustomCalendarState extends State<CustomCalendar> {
   late DateTime _focusedDay;
-//   late DateTime? _selectedDay;
-// DateTime dateTime = DateFormat("d-M-yyyy").parse(currentShipment.estimatedDeliveryDate);
+
   @override
   void initState() {
     super.initState();
-    // _selectedDay = dateTime;
     _focusedDay = DateTime.now();
   }
 
@@ -178,11 +172,6 @@ class _CustomCalendarState extends State<CustomCalendar> {
             selectedDayPredicate: (day) => isSameDay(dateTime, day),
             onDaySelected: (selectedDay, focusedDay) {
               print(dateTime.day);
-              // setState(() {
-              //   _selectedDay = selectedDay;
-              //   _focusedDay = focusedDay;
-              // });
-              // widget.onDateSelected(selectedDay);
             },
             calendarFormat: CalendarFormat.month,
             onPageChanged: (focusedDay) {

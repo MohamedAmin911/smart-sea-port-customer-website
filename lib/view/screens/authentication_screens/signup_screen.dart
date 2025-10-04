@@ -39,7 +39,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final isWideScreen = screenWidth > 600; // Check for wide screens
+    final isWideScreen = screenWidth > 600;
 
     return Scaffold(
       appBar: AppBar(

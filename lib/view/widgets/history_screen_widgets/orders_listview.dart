@@ -18,7 +18,6 @@ class OrdersListView extends StatelessWidget {
     final OrderController ordersController = Get.put(OrderController());
     return ListView.builder(
         shrinkWrap: true,
-        // physics: const NeverScrollableScrollPhysics(),
         itemCount: customerController.currentCustomer.value.orders.length,
         itemBuilder: (context, index) {
           return Obx(

@@ -15,11 +15,9 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class ShipController extends GetxController {
-  // Google Maps controller
   GoogleMapController? mapController;
   final OrderController orderController = Get.find<OrderController>();
 
-  // Observables for reactive state management
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final sourceLatLng = Rx<LatLng?>(null);
   final destinationLatLng = Rx<LatLng?>(null);
@@ -64,15 +62,13 @@ class ShipController extends GetxController {
 
   Future<void> updateBlockchainStatus(
       String shipmentId, String newStatus) async {
-    // Construct the URL exactly as shown in Postman
     final url = Uri.parse('${KapiKeys.blockChainUrl}/$shipmentId/status');
 
     final headers = {
       'Content-Type': 'application/json',
-      'ngrok-skip-browser-warning': 'true', // Header for ngrok
+      'ngrok-skip-browser-warning': 'true',
     };
 
-    // Construct the JSON body with the "newStatus" key
     final body = jsonEncode({'newStatus': newStatus});
 
     print("Attempting to update blockchain status via PUT...");
@@ -80,7 +76,6 @@ class ShipController extends GetxController {
     print("Payload: $body");
 
     try {
-      // Use http.put to match the Postman request method
       final response = await http.put(url, headers: headers, body: body);
 
       if (response.statusCode == 200) {
@@ -162,11 +157,8 @@ class ShipController extends GetxController {
     }
   }
 
-  // In your ShipController class
   Future<void> initializeMap(String sourceAddress, String destinationAddress,
       String containerId, String shipmentId) async {
-    // --- THIS IS THE FIX ---
-    // Capture the containerId and shipmentId when the map is initialized
     this.currentShipmentId = shipmentId;
     this.currentContainerId = containerId;
 
@@ -232,7 +224,6 @@ class ShipController extends GetxController {
     } catch (e) {}
   }
 
-  // In your ShipController class
   void startShipMovement() async {
     if (!iconsLoaded.value) return;
     if (isSimulationFinished) return;
@@ -255,7 +246,6 @@ class ShipController extends GetxController {
     movementTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (seaRoutePoints.isEmpty) return;
 
-      // --- THIS ENTIRE BLOCK IS NOW FIXED ---
       if (progress.value >= 0.5 && !checkpointReached) {
         checkpointReached = true;
         isAtCheckpoint.value = true;
@@ -263,22 +253,12 @@ class ShipController extends GetxController {
         orderController.updateShipmentStatus(
             currentShipmentId!, ShipmentStatus.checkPointA);
 
-        // Use the safely stored containerId
         if (currentContainerId != null) {
           updateBlockchainStatus(currentContainerId!, 'CHECKPOINT_A');
         }
 
         Future.delayed(const Duration(seconds: 5), () {
           isAtCheckpoint.value = false;
-          // Restore the logic to resume the trip
-          // if (trackedShipment.value?.shipmentStatus ==
-          //     ShipmentStatus.checkPointA) {
-          //   orderController.updateShipmentStatus(
-          //       currentShipmentId!, ShipmentStatus.inTransit);
-          // if (currentContainerId != null) {
-          //   updateBlockchainStatus(currentContainerId!, 'INTRANSIT');
-          // }
-          //}
         });
       }
 
@@ -288,7 +268,6 @@ class ShipController extends GetxController {
           progress.value = 1.0;
 
           if (currentShipmentId != null) {
-            // Check for inTransit before marking as delivered
             if (trackedShipment.value != null &&
                 trackedShipment.value!.shipmentStatus ==
                     ShipmentStatus.checkPointA) {

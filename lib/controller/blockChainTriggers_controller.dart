@@ -62,13 +62,13 @@ class BlockchaintriggersController extends GetxController {
             if (entry.value['ID']?.toUpperCase() == normalizedOrderId) {
               if (entry.value['PortEntryTrigger'] == '1') {
                 await orderController.updateShipmentStatus(
-                  orderId!,
+                  orderId,
                   ShipmentStatus.enteredPort,
                 );
               }
               if (entry.value['ContainerStoredTrigger'] == '1') {
                 await orderController.updateShipmentStatus(
-                  orderId!,
+                  orderId,
                   ShipmentStatus.unLoaded,
                 );
                 _blockChainTimer?.cancel();

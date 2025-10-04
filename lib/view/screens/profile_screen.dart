@@ -190,7 +190,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           prefixIcon: Icons.location_city_rounded,
                           function: () {
                             if (customerController.isEditing5.value) {
-                              // If already editing, upload data
                               customerController.updateCustomerData(
                                   customerController.currentCustomer.value.uid,
                                   {
@@ -222,7 +221,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           prefixIcon: Icons.perm_identity_rounded,
                           function: () {
                             if (customerController.isEditing6.value) {
-                              // If already editing, upload data
                               customerController.updateCustomerData(
                                   customerController.currentCustomer.value.uid,
                                   {
@@ -255,7 +253,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           prefixIcon: Icons.credit_card_rounded,
                           function: () {
                             if (customerController.isEditing7.value) {
-                              // If already editing, upload data
                               customerController.updateCustomerData(
                                   customerController.currentCustomer.value.uid,
                                   {
@@ -269,7 +266,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   title: "Success",
                                   msg: "Profile updated successfully!");
                             } else {
-                              // Enable editing mode
                               customerController.isEditing7.value = true;
                             }
                           },

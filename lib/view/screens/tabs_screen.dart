@@ -53,7 +53,6 @@ class _TabsScreenState extends State<TabsScreen>
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        // Reset currentCustomer to avoid stale data
         customerController.currentCustomer.value = CustomerModel(
           uid: user.uid,
           companyName: '',

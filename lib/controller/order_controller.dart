@@ -26,13 +26,10 @@ class OrderController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // This listener reacts to user login/logout
     _auth.authStateChanges().listen((User? user) {
       if (user != null) {
-        // When user logs in, fetch their shipments. The listener will handle all updates.
         fetchUserShipments(user.uid);
       } else {
-        // Clear all data and cancel listeners on logout
         shipmentsList.clear();
         currentShipment.value = null;
         _shipmentsSubscription?.cancel();
@@ -82,7 +79,6 @@ class OrderController extends GetxController {
     }
   }
 
-  // --- THIS FUNCTION NOW CONTAINS THE CORRECTED TRIGGER LOGIC ---
   Future<void> fetchUserShipments(String userId) async {
     await _shipmentsSubscription?.cancel();
     _shipmentsSubscription = _shipmentRef
@@ -98,12 +94,10 @@ class OrderController extends GetxController {
               Map<String, dynamic>.from(value as Map)));
         });
 
-        // --- THIS IS THE FIX: Check every shipment for trigger updates ---
         for (var shipment in userShipments) {
           bool hasEnteredPort = shipment.PortEntryTrigger == 1;
           bool isStored = shipment.ContainerStoredTrigger == 1;
 
-          // Check the current status to avoid unnecessary updates
           if (hasEnteredPort &&
               !isStored &&
               shipment.shipmentStatus != ShipmentStatus.enteredPort) {
@@ -137,7 +131,6 @@ class OrderController extends GetxController {
     }
   }
 
-  // Other functions remain unchanged...
   Future<void> updateShipmentOrderId(String shipmentId, String orderId) async {
     try {
       await _shipmentRef
@@ -161,16 +154,13 @@ class OrderController extends GetxController {
   }
 
   Future<void> postContainerId(String containerId) async {
-    // The endpoint for creating a new container
     final url = Uri.parse('${KapiKeys.blockChainUrl}');
 
-    // Add the ngrok-specific header to bypass browser warnings
     final headers = {
       'Content-Type': 'application/json',
       'ngrok-skip-browser-warning': 'true',
     };
 
-    // FIX: The JSON key is now 'containerID' with a capital 'D'
     final body = jsonEncode({'containerId': containerId});
 
     isLoading.value = true;

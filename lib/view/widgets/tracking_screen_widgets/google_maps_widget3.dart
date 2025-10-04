@@ -23,10 +23,8 @@ class _MapScreenState extends State<MapScreen> {
   void initState() {
     super.initState();
 
-    // Automatically initialize map and start simulation after the first frame
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       try {
-        // Find the first shipment with a valid status
         final shipment = orderController.shipmentsList.firstWhere(
           (element) =>
               element.shipmentStatus.name == ShipmentStatus.inTransit.name ||
@@ -37,22 +35,11 @@ class _MapScreenState extends State<MapScreen> {
           orElse: () => throw Exception('No valid shipment found'),
         );
 
-        // Initialize map with source and destination addresses
-        await controller.initializeMap(
-            shipment.senderAddress, // Source address
-            "Port Said",
-            shipment.containerId,
-            shipment.shipmentId // Destination address
-            );
+        await controller.initializeMap(shipment.senderAddress, "Port Said",
+            shipment.containerId, shipment.shipmentId);
 
-        // Start the ship movement simulation
         controller.startShipMovement();
-      } catch (e) {
-        // Handle errors (e.g., no valid shipment)
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   SnackBar(content: Text('Error starting simulation: $e')),
-        // );
-      }
+      } catch (e) {}
     });
   }
 

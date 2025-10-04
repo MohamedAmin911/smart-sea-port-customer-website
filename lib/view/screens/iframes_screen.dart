@@ -22,7 +22,7 @@ class PaymobPaymentDialog extends StatefulWidget {
 class _PaymobPaymentDialogState extends State<PaymobPaymentDialog> {
   late final html.IFrameElement _iframeElement;
   late final StreamSubscription<html.Event> _messageSubscription;
-  late String _viewId; // Store the view ID
+  late String _viewId;
 
   @override
   void initState() {
@@ -40,7 +40,6 @@ class _PaymobPaymentDialogState extends State<PaymobPaymentDialog> {
       ..style.height = '100%'
       ..allow = 'payment';
 
-    // Register the view before building
     ui.platformViewRegistry.registerViewFactory(
       _viewId,
       (int viewId) => _iframeElement,
@@ -97,8 +96,8 @@ class _PaymobPaymentDialogState extends State<PaymobPaymentDialog> {
             ),
             Expanded(
               child: HtmlElementView(
-                viewType: _viewId, // Use the stored view ID
-                key: UniqueKey(), // Important for widget rebuilds
+                viewType: _viewId,
+                key: UniqueKey(),
               ),
             ),
           ],

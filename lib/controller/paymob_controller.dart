@@ -31,7 +31,6 @@ class PayMobController extends GetxController {
       String paymentKey = await getPaymentKey(
           token, orderId.toString(), (100 * amount).toString());
 
-      // Update the shipment with the order ID
       final shipment = orderController.shipmentsList.firstWhere(
         (shipment) =>
             shipment.shipmentStatus.name == ShipmentStatus.waitngPayment.name,
@@ -40,7 +39,6 @@ class PayMobController extends GetxController {
       await orderController.updateShipmentOrderId(
           shipment.shipmentId, orderId.toString());
 
-      // Open payment iframe
       Get.dialog(
         PaymobPaymentDialog(
           paymentUrl:
@@ -52,7 +50,6 @@ class PayMobController extends GetxController {
 
               if (verified) {
                 isPaid.value = true;
-                // Update the shipment status
                 do {
                   await orderController.updateShipmentPaymentStatus(
                       shipment.shipmentId, true);
@@ -63,7 +60,7 @@ class PayMobController extends GetxController {
                         .shipmentStatus
                         .name !=
                     ShipmentStatus.inTransit.name);
-                Get.offAll(() => TrackingScreen()); // Force navigation back
+                Get.offAll(() => TrackingScreen());
               }
             }
           },
@@ -77,7 +74,6 @@ class PayMobController extends GetxController {
 
   Future<bool> _verifyPaymentOnServer(String paymentToken) async {
     try {
-      // 1. First get transaction details from Paymob
       final authToken = await getToken();
       final transactionResponse = await dio.get(
         'https://accept.paymob.com/api/acceptance/transactions/$paymentToken',
@@ -90,9 +86,8 @@ class PayMobController extends GetxController {
       final orderId = transactionResponse.data['order']['id'];
       final amountCents = transactionResponse.data['amount_cents'];
 
-      // 2. Verify with your backend server
       final response = await dio.post(
-        '${KapiKeys.payMobApiKey}/verify-payment', // Replace with your endpoint
+        '${KapiKeys.payMobApiKey}/verify-payment',
         data: {
           'transaction_id': transactionId,
           'order_id': orderId,
@@ -192,7 +187,6 @@ class PayMobController extends GetxController {
         }),
       );
 
-      // Check response data
       if (response.statusCode == 200) {
         final transactionData = response.data;
         final bool isSuccess = transactionData['success'] == true &&
@@ -214,10 +208,8 @@ class PayMobController extends GetxController {
   Future<void> getPaymentStatus(String orderID) async {
     try {
       isLoading.value = true;
-      // 1. First get the authentication token
       final authToken = await getToken();
 
-      // 2. Make the request with proper authentication
       final response = await dio.post(
         "https://accept.paymob.com/api/ecommerce/orders/transaction_inquiry",
         options: dioo.Options(
@@ -245,11 +237,6 @@ class PayMobController extends GetxController {
         print("successsssssssssssssssssssssssssssss");
         await orderController
             .fetchUserShipments(customerController.currentCustomer.value.uid);
-
-        // await shipController.initializePositions(orderController.shipmentsList
-        //     .firstWhere((shipment) =>
-        //         shipment.shipmentStatus.name == ShipmentStatus.inTransit.name)
-        //     .senderAddress);
 
         orderController.postContainerId(orderController.shipmentsList
             .firstWhere((shipment) =>

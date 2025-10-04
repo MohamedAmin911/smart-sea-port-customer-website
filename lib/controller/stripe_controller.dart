@@ -36,7 +36,6 @@ class StripeController extends GetxController {
         "payment_method_types[]": "card"
       };
 
-      // Convert to form-urlencoded format
       final formData = data.entries
           .map((e) => "${e.key}=${Uri.encodeComponent(e.value)}")
           .join("&");
@@ -49,13 +48,12 @@ class StripeController extends GetxController {
             "Authorization": "Bearer ${KapiKeys.stripeSecretKey}",
             "Content-Type": "application/x-www-form-urlencoded",
           },
-          validateStatus: (status) =>
-              status! < 500, // Don't throw for 4xx errors
+          validateStatus: (status) => status! < 500,
         ),
       );
 
       if (response.statusCode == 200) {
-        return response.data['client_secret']; // Return payment intent ID
+        return response.data['client_secret'];
       } else {
         print("Stripe API error: ${response.statusCode} - ${response.data}");
         throw Exception(
@@ -75,8 +73,3 @@ class StripeController extends GetxController {
     }
   }
 }
-
-// class StripeService {
-//   StripeService._();
-//   static final StripeService instance = StripeService._();
-// }

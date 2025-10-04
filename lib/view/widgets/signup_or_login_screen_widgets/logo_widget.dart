@@ -6,13 +6,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 Widget buildLogo() {
   return FittedBox(
-    // Use FittedBox for scaling the logo
     fit: BoxFit.contain,
     child: SvgPicture.asset(
       KIconAssets.smartPortLogo,
       color: Kcolor.primary,
       width: 400.w,
-      height: 400.h, // Set a maximum width for the logo
+      height: 400.h,
     ),
   );
 }
